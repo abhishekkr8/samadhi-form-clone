@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 
 const MembershipStep1 = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -22,6 +24,7 @@ const MembershipStep1 = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Step 1 Submitted");
+    navigate("/step-2");
   };
 
   const objectives = [
