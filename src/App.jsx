@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import MembershipStep1 from "./components/MembershipStep1";
 import MembershipStep2 from "./components/MembershipStep2";
+import MembershipStep3 from "./components/MembershipStep3";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/step-2",
     element: <MembershipStep2 />,
+  },
+  {
+    path: "/step-3",
+    element: <MembershipStep3 />,
   },
 ]);
 
