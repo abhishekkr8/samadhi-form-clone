@@ -24,18 +24,48 @@ const MembershipStep4 = () => {
     
     setIsProcessing(true);
     
-    // Simulate saving data and redirecting to payment
-    console.log("Payment Data:", {
+    // Prepare membership data
+    const membershipData = {
+      stakeholderId,
       stakeholder: stakeholderTitle,
       price: stakeholderPrice,
       formData,
       subscriptions,
-    });
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Save to localStorage for now
+    const existingApplications = JSON.parse(localStorage.getItem("membershipApplications") || "[]");
+    existingApplications.push(membershipData);
+    localStorage.setItem("membershipApplications", JSON.stringify(existingApplications));
+    
+    console.log("Membership Data Saved:", membershipData);
+    
+    // TODO: BACKEND API - Add database save API call here
+    // Example:
+    // const response = await fetch('/api/membership/save', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(membershipData)
+    // });
+    // const result = await response.json();
+    
+    // TODO: PAYMENT GATEWAY - Add payment gateway integration here
+    // Example for Razorpay/Stripe:
+    // const paymentResponse = await initiatePayment({
+    //   amount: stakeholderPrice,
+    //   currency: 'INR',
+    //   orderId: result.orderId,
+    //   customerEmail: formData.email,
+    //   customerName: formData.name
+    // });
+    // Redirect to payment page or open payment modal
     
     setTimeout(() => {
       setIsProcessing(false);
-      alert("Payment integration will be added here. Data saved successfully!");
-    }, 1500);
+      alert("Data saved to localStorage successfully! Payment gateway will be integrated later.");
+    }, 1000);
   };
 
   if (!stakeholderId) {
