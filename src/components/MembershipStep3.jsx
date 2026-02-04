@@ -20,6 +20,16 @@ const subCategoryOptions = {
 };
 
 const preferredModeOptions = ["Online", "Offline", "Hybrid"];
+const freelancerTypeOptions = ["Developer", "Designer", "Writer", "Consultant", "Marketing", "Finance", "Legal", "Other"];
+const experienceLevelOptions = ["Entry Level", "Intermediate", "Experienced", "Expert"];
+const availabilityOptions = ["Full Time", "Part Time", "Freelance", "Contract"];
+
+// Common fields that appear in all stakeholder forms
+const commonFields = [
+  { name: "category", label: "Category", type: "multiselect", options: categoryOptions, required: true, helperText: "You Can Choose Multiple Area Of Interest" },
+  { name: "subCategory", label: "Sub Category", type: "multiselect", options: [], required: true, helperText: "You Can Choose Multiple Sub-Categories", dependsOn: "category" },
+  { name: "describeNeed", label: "Describe Your Need", type: "textarea", required: true, placeholder: "You May Describe Your Future Needs/Requirements Here", fullWidth: true },
+];
 
 const stakeholderForms = {
   students: {
@@ -32,20 +42,19 @@ const stakeholderForms = {
       { name: "keySkills", label: "Key Skills", type: "textarea", required: true, placeholder: "Enter key skills" },
       { name: "preferredMode", label: "Preferred Mode", type: "select", options: preferredModeOptions, required: true },
       { name: "experience", label: "Experience/Projects (if any)", type: "textarea", required: false, placeholder: "Enter experience/projects (if any)" },
-      { name: "category", label: "Category", type: "multiselect", options: categoryOptions, required: true, helperText: "You Can Choose Multiple Area Of Interest" },
-      { name: "subCategory", label: "Sub Category", type: "multiselect", options: [], required: true, helperText: "You Can Choose Multiple Sub-Categories", dependsOn: "category" },
-      { name: "describeNeed", label: "Describe Your Need", type: "textarea", required: true, placeholder: "You May Describe Your Future Needs/Requirements Here", fullWidth: true },
+      ...commonFields,
     ],
   },
   freelancers: {
     title: "Freelancer Details",
     icon: User,
     fields: [
-      { name: "profession", label: "Profession / Expertise", type: "text", required: true },
-      { name: "experience", label: "Years of Experience", type: "select", options: ["0-1 Years", "1-3 Years", "3-5 Years", "5-10 Years", "10+ Years"], required: true },
-      { name: "portfolio", label: "Portfolio URL", type: "text", required: false },
-      { name: "services", label: "Services Offered", type: "textarea", required: true },
-      { name: "hourlyRate", label: "Hourly Rate (₹)", type: "text", required: false },
+      { name: "freelancerType", label: "Freelancer Type", type: "select", options: freelancerTypeOptions, required: true },
+      { name: "primarySkills", label: "Primary Skills", type: "textarea", required: true, placeholder: "Enter primary skills" },
+      { name: "experienceLevel", label: "Experience Level", type: "select", options: experienceLevelOptions, required: true },
+      { name: "availability", label: "Availability", type: "select", options: availabilityOptions, required: true },
+      { name: "preferredWorkMode", label: "Preferred Work Mode", type: "select", options: preferredModeOptions, required: true },
+      ...commonFields,
     ],
   },
   educational: {
@@ -59,6 +68,7 @@ const stakeholderForms = {
       { name: "website", label: "Website URL", type: "text", required: false },
       { name: "contactPerson", label: "Contact Person Name", type: "text", required: true },
       { name: "designation", label: "Designation", type: "text", required: true },
+      ...commonFields,
     ],
   },
   startups: {
@@ -71,7 +81,7 @@ const stakeholderForms = {
       { name: "stage", label: "Business Stage", type: "select", options: ["Idea Stage", "Prototype", "Early Revenue", "Growth Stage", "Established"], required: true },
       { name: "teamSize", label: "Team Size", type: "text", required: true },
       { name: "funding", label: "Funding Status", type: "select", options: ["Bootstrapped", "Seed Funded", "Series A", "Series B+", "Not Applicable"], required: false },
-      { name: "description", label: "Company Description", type: "textarea", required: true },
+      ...commonFields,
     ],
   },
   incubation: {
@@ -85,6 +95,7 @@ const stakeholderForms = {
       { name: "focusAreas", label: "Focus Areas", type: "textarea", required: true },
       { name: "facilities", label: "Facilities Offered", type: "textarea", required: false },
       { name: "website", label: "Website URL", type: "text", required: false },
+      ...commonFields,
     ],
   },
   "service-providers": {
@@ -97,6 +108,7 @@ const stakeholderForms = {
       { name: "clientele", label: "Target Clientele", type: "textarea", required: true },
       { name: "offerings", label: "Key Offerings", type: "textarea", required: true },
       { name: "website", label: "Website URL", type: "text", required: false },
+      ...commonFields,
     ],
   },
   industry: {
@@ -110,6 +122,7 @@ const stakeholderForms = {
       { name: "partnershipInterest", label: "Partnership Interest Areas", type: "textarea", required: true },
       { name: "contactPerson", label: "Contact Person", type: "text", required: true },
       { name: "designation", label: "Designation", type: "text", required: true },
+      ...commonFields,
     ],
   },
   "project-partner": {
@@ -123,6 +136,7 @@ const stakeholderForms = {
       { name: "collaborationType", label: "Collaboration Type", type: "select", options: ["Funding Partner", "Implementation Partner", "Knowledge Partner", "Resource Partner"], required: true },
       { name: "contactPerson", label: "Contact Person", type: "text", required: true },
       { name: "designation", label: "Designation", type: "text", required: true },
+      ...commonFields,
     ],
   },
 };
