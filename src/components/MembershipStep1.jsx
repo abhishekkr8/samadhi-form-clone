@@ -23,8 +23,10 @@ const MembershipStep1 = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Step 1 Submitted");
-    navigate("/step-2");
+    console.log("Step 1 Submitted:", formData);
+    navigate("/step-2", {
+      state: { personalInfo: formData }
+    });
   };
 
   const objectives = [

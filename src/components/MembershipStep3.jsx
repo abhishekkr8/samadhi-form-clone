@@ -160,7 +160,7 @@ const subscriptionOptions = [
 const MembershipStep3 = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { stakeholderId, stakeholderTitle, stakeholderPrice } = location.state || {};
+  const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice } = location.state || {};
 
   const [formData, setFormData] = useState({});
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -235,10 +235,11 @@ const MembershipStep3 = () => {
     // Navigate to Step 4 payment page
     navigate("/step-4", {
       state: {
+        personalInfo,
         stakeholderId,
         stakeholderTitle,
         stakeholderPrice,
-        formData: {
+        stakeholderFormData: {
           ...formData,
           categories: selectedCategories,
           subCategories: selectedSubCategories,

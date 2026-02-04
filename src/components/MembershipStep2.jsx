@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const stakeholders = [
@@ -62,11 +62,14 @@ const stakeholders = [
 
 const MembershipStep2 = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { personalInfo } = location.state || {};
 
   const handleSelect = (stakeholder) => {
     console.log("Step 2 Submitted - Selected:", stakeholder.title, "Price:", stakeholder.price);
     navigate("/step-3", {
       state: {
+        personalInfo,
         stakeholderId: stakeholder.id,
         stakeholderTitle: stakeholder.title,
         stakeholderPrice: stakeholder.price,
@@ -75,7 +78,9 @@ const MembershipStep2 = () => {
   };
 
   const handleBack = () => {
-    navigate("/");
+    navigate("/", {
+      state: { personalInfo }
+    });
   };
 
   return (
