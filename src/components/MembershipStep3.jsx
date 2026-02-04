@@ -28,6 +28,8 @@ const startupStageOptions = ["Idea Stage", "Prototype", "MVP", "Early Revenue", 
 const incubationTypeOptions = ["Government", "Private", "Academic", "Corporate", "Non-Profit", "Other"];
 const providerTypeOptions = ["Product Provider", "Service Provider", "Both", "Consultant", "Agency", "Other"];
 const clientTypeOptions = ["B2B", "B2C", "B2G", "Enterprise", "SME", "Startups", "All"];
+const organizationTypeOptions = ["Private", "Public", "Government", "MNC", "Partnership", "Proprietorship", "Other"];
+const companySizeOptions = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
 
 // Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
 const commonFields = [
@@ -120,13 +122,12 @@ const stakeholderForms = {
     title: "Industry Details",
     icon: Building,
     fields: [
-      { name: "companyName", label: "Company Name", type: "text", required: true },
-      { name: "industry", label: "Industry Type", type: "select", options: ["IT/Software", "Manufacturing", "Pharma", "FMCG", "Automotive", "Banking", "Telecom", "Other"], required: true },
-      { name: "employeeCount", label: "Employee Count", type: "select", options: ["1-50", "51-200", "201-500", "501-1000", "1000+"], required: true },
-      { name: "annualRevenue", label: "Annual Revenue Range", type: "select", options: ["Under 1 Cr", "1-10 Cr", "10-50 Cr", "50-100 Cr", "100+ Cr"], required: false },
-      { name: "partnershipInterest", label: "Partnership Interest Areas", type: "textarea", required: true },
-      { name: "contactPerson", label: "Contact Person", type: "text", required: true },
-      { name: "designation", label: "Designation", type: "text", required: true },
+      { name: "organizationCompanyName", label: "Organization/Company Name", type: "text", required: true, placeholder: "Enter organization/company name" },
+      { name: "organizationType", label: "Organization Type", type: "select", options: organizationTypeOptions, required: true },
+      { name: "industrySectorDomain", label: "Industry Sector/Domain", type: "text", required: true, placeholder: "Enter industry sector/domain" },
+      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
+      { name: "companySize", label: "Company Size", type: "select", options: companySizeOptions, required: true },
+      { name: "operationalLocation", label: "Operational Location", type: "text", required: true, placeholder: "Enter operational location" },
       ...commonFields,
     ],
   },
