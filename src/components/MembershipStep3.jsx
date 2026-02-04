@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, User, Building, GraduationCap, Briefcase, Users } from "lucide-react";
+import { ArrowLeft, User, Building, GraduationCap, Briefcase, Users, Bell, Newspaper, Calendar, Wrench, BriefcaseBusiness, FileText, Megaphone } from "lucide-react";
 
 const categoryOptions = [
   "Technology", "Business", "Marketing", "Finance", "Legal", "HR", "Design", "Content", "Research", "Other"
@@ -149,10 +149,12 @@ const stakeholderForms = {
 };
 
 const subscriptionOptions = [
-  { id: "newsletter", label: "Newsletter Updates", description: "Receive monthly newsletters about events and opportunities" },
-  { id: "events", label: "Event Notifications", description: "Get notified about upcoming workshops, seminars, and meetups" },
-  { id: "opportunities", label: "Business Opportunities", description: "Receive updates about collaboration and funding opportunities" },
-  { id: "resources", label: "Resource Updates", description: "Access to new resources, tools, and learning materials" },
+  { id: "newsletter", label: "Newsletter & Updates", icon: Newspaper },
+  { id: "events", label: "Events & Webinars", icon: Calendar },
+  { id: "resources", label: "Resources & Tools", icon: Wrench },
+  { id: "career", label: "Career Opportunities", icon: BriefcaseBusiness },
+  { id: "tenders", label: "Tenders/Wedding Info", icon: FileText },
+  { id: "advertisements", label: "Advertisements", icon: Megaphone },
 ];
 
 const MembershipStep3 = () => {
@@ -166,8 +168,10 @@ const MembershipStep3 = () => {
   const [subscriptions, setSubscriptions] = useState({
     newsletter: true,
     events: true,
-    opportunities: false,
     resources: false,
+    career: false,
+    tenders: true,
+    advertisements: false,
   });
 
   const stakeholderForm = stakeholderForms[stakeholderId] || stakeholderForms.students;
@@ -424,36 +428,40 @@ const MembershipStep3 = () => {
               </div>
 
               {/* Subscription Preferences */}
-              <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                  Subscription Preferences
-                </h2>
-                <p className="text-gray-500 text-sm mb-6">
-                  Choose how you want to stay connected with us
+              <div className="mb-8 border border-gray-200 rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-1">
+                  <Bell className="w-5 h-5 text-gray-600" />
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Subscription Preferences
+                  </h2>
+                </div>
+                <p className="text-gray-500 text-sm mb-6 ml-8">
+                  Select what you'd like to receive
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {subscriptionOptions.map((option) => (
-                    <label
-                      key={option.id}
-                      className={`flex items-start gap-3 p-4 border rounded-lg cursor-pointer transition-all ${
-                        subscriptions[option.id]
-                          ? "border-[#4CAF50] bg-green-50"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={subscriptions[option.id]}
-                        onChange={() => handleSubscriptionChange(option.id)}
-                        className="mt-1 w-4 h-4 text-[#4CAF50] border-gray-300 rounded focus:ring-[#4CAF50]"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-800">{option.label}</p>
-                        <p className="text-sm text-gray-500">{option.description}</p>
-                      </div>
-                    </label>
-                  ))}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {subscriptionOptions.map((option) => {
+                    const OptionIcon = option.icon;
+                    return (
+                      <label
+                        key={option.id}
+                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all min-h-[56px] ${
+                          subscriptions[option.id]
+                            ? "border-blue-400 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300 bg-white"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={subscriptions[option.id]}
+                          onChange={() => handleSubscriptionChange(option.id)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <OptionIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
 
