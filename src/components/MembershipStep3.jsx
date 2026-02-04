@@ -247,7 +247,6 @@ const MembershipStep3 = () => {
       }
     });
   };
-  };
 
   if (!stakeholderId) {
     return (
