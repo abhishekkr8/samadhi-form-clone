@@ -2,16 +2,39 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, User, Building, GraduationCap, Briefcase, Users } from "lucide-react";
 
+const categoryOptions = [
+  "Technology", "Business", "Marketing", "Finance", "Legal", "HR", "Design", "Content", "Research", "Other"
+];
+
+const subCategoryOptions = {
+  Technology: ["Web Development", "Mobile Development", "AI/ML", "Cloud Computing", "Cybersecurity", "Data Science"],
+  Business: ["Company incorporation", "Business Strategy", "Operations", "Project Management", "Consulting"],
+  Marketing: ["Digital Marketing", "Content Marketing", "SEO/SEM", "Social Media", "Branding"],
+  Finance: ["Accounting", "Investment", "Taxation", "Auditing", "Financial Planning"],
+  Legal: ["Company Law", "IPR", "Contract Law", "Compliance", "Litigation"],
+  HR: ["Recruitment", "Training", "Payroll", "Employee Relations"],
+  Design: ["UI/UX", "Graphic Design", "Product Design", "Branding"],
+  Content: ["Copywriting", "Technical Writing", "Video Production", "Photography"],
+  Research: ["Market Research", "Academic Research", "Product Research"],
+  Other: ["Other Services"]
+};
+
+const preferredModeOptions = ["Online", "Offline", "Hybrid"];
+
 const stakeholderForms = {
   students: {
     title: "Student Details",
     icon: GraduationCap,
     fields: [
-      { name: "institution", label: "Institution Name", type: "text", required: true },
-      { name: "course", label: "Course / Program", type: "text", required: true },
-      { name: "year", label: "Year of Study", type: "select", options: ["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year"], required: true },
-      { name: "studentId", label: "Student ID / Roll Number", type: "text", required: true },
-      { name: "skills", label: "Key Skills", type: "textarea", required: false },
+      { name: "collegeName", label: "College/University Name", type: "text", required: true, placeholder: "Enter college/university name" },
+      { name: "courseDegree", label: "Course/Degree", type: "text", required: true, placeholder: "Enter course/degree" },
+      { name: "specialization", label: "Specialization/Stream", type: "text", required: true, placeholder: "Enter specialization/stream" },
+      { name: "keySkills", label: "Key Skills", type: "textarea", required: true, placeholder: "Enter key skills" },
+      { name: "preferredMode", label: "Preferred Mode", type: "select", options: preferredModeOptions, required: true },
+      { name: "experience", label: "Experience/Projects (if any)", type: "textarea", required: false, placeholder: "Enter experience/projects (if any)" },
+      { name: "category", label: "Category", type: "multiselect", options: categoryOptions, required: true, helperText: "You Can Choose Multiple Area Of Interest" },
+      { name: "subCategory", label: "Sub Category", type: "multiselect", options: [], required: true, helperText: "You Can Choose Multiple Sub-Categories", dependsOn: "category" },
+      { name: "describeNeed", label: "Describe Your Need", type: "textarea", required: true, placeholder: "You May Describe Your Future Needs/Requirements Here", fullWidth: true },
     ],
   },
   freelancers: {
@@ -117,6 +140,8 @@ const MembershipStep3 = () => {
   const { stakeholderId, stakeholderTitle, stakeholderPrice } = location.state || {};
 
   const [formData, setFormData] = useState({});
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [subscriptions, setSubscriptions] = useState({
     newsletter: true,
     events: true,
@@ -126,6 +151,39 @@ const MembershipStep3 = () => {
 
   const stakeholderForm = stakeholderForms[stakeholderId] || stakeholderForms.students;
   const IconComponent = stakeholderForm.icon;
+
+  // Get available sub-categories based on selected categories
+  const getAvailableSubCategories = () => {
+    let subs = [];
+    selectedCategories.forEach(cat => {
+      if (subCategoryOptions[cat]) {
+        subs = [...subs, ...subCategoryOptions[cat]];
+      }
+    });
+    return [...new Set(subs)];
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        const newCategories = prev.filter(c => c !== category);
+        // Also remove sub-categories that belong to removed category
+        const validSubs = getAvailableSubCategories();
+        setSelectedSubCategories(curr => curr.filter(s => validSubs.includes(s)));
+        return newCategories;
+      }
+      return [...prev, category];
+    });
+  };
+
+  const handleSubCategoryChange = (subCategory) => {
+    setSelectedSubCategories(prev => {
+      if (prev.includes(subCategory)) {
+        return prev.filter(s => s !== subCategory);
+      }
+      return [...prev, subCategory];
+    });
+  };
 
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -145,6 +203,8 @@ const MembershipStep3 = () => {
       stakeholder: stakeholderTitle,
       price: stakeholderPrice,
       formData,
+      categories: selectedCategories,
+      subCategories: selectedSubCategories,
       subscriptions,
     });
     // Navigate to next step or confirmation
@@ -220,7 +280,7 @@ const MembershipStep3 = () => {
                   {stakeholderForm.fields.map((field) => (
                     <div
                       key={field.name}
-                      className={field.type === "textarea" ? "md:col-span-2" : ""}
+                      className={field.type === "textarea" || field.fullWidth ? "md:col-span-2" : ""}
                     >
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {field.label}
@@ -234,7 +294,7 @@ const MembershipStep3 = () => {
                           onChange={(e) => handleInputChange(field.name, e.target.value)}
                           required={field.required}
                           className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
-                          placeholder={`Enter ${field.label.toLowerCase()}`}
+                          placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                         />
                       )}
 
@@ -254,14 +314,87 @@ const MembershipStep3 = () => {
                         </select>
                       )}
 
+                      {field.type === "multiselect" && field.name === "category" && (
+                        <div>
+                          <div className="relative">
+                            <select
+                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  handleCategoryChange(e.target.value);
+                                  e.target.value = "";
+                                }
+                              }}
+                            >
+                              <option value="">Select Category</option>
+                              {categoryOptions.map((option) => (
+                                <option key={option} value={option} disabled={selectedCategories.includes(option)}>
+                                  {option} {selectedCategories.includes(option) ? "✓" : ""}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {selectedCategories.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {selectedCategories.map(cat => (
+                                <span key={cat} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1">
+                                  {cat}
+                                  <button type="button" onClick={() => handleCategoryChange(cat)} className="text-green-600 hover:text-green-800">×</button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {field.helperText && (
+                            <p className="text-sm text-blue-600 mt-1">{field.helperText}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {field.type === "multiselect" && field.name === "subCategory" && (
+                        <div>
+                          <div className="relative">
+                            <select
+                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  handleSubCategoryChange(e.target.value);
+                                  e.target.value = "";
+                                }
+                              }}
+                              disabled={selectedCategories.length === 0}
+                            >
+                              <option value="">{selectedCategories.length === 0 ? "Select Category first" : "Select Sub Category"}</option>
+                              {getAvailableSubCategories().map((option) => (
+                                <option key={option} value={option} disabled={selectedSubCategories.includes(option)}>
+                                  {option} {selectedSubCategories.includes(option) ? "✓" : ""}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {selectedSubCategories.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {selectedSubCategories.map(sub => (
+                                <span key={sub} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1">
+                                  {sub}
+                                  <button type="button" onClick={() => handleSubCategoryChange(sub)} className="text-green-600 hover:text-green-800">×</button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {field.helperText && (
+                            <p className="text-sm text-blue-600 mt-1">{field.helperText}</p>
+                          )}
+                        </div>
+                      )}
+
                       {field.type === "textarea" && (
                         <textarea
                           value={formData[field.name] || ""}
                           onChange={(e) => handleInputChange(field.name, e.target.value)}
                           required={field.required}
                           rows={4}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent resize-none"
-                          placeholder={`Enter ${field.label.toLowerCase()}`}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent resize-y"
+                          placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                         />
                       )}
                     </div>
