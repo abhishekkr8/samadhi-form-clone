@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -63,11 +62,16 @@ const stakeholders = [
 
 const MembershipStep2 = () => {
   const navigate = useNavigate();
-  const [selectedStakeholder, setSelectedStakeholder] = useState(null);
 
   const handleSelect = (stakeholder) => {
-    setSelectedStakeholder(stakeholder.id);
     console.log("Step 2 Submitted - Selected:", stakeholder.title, "Price:", stakeholder.price);
+    navigate("/step-3", {
+      state: {
+        stakeholderId: stakeholder.id,
+        stakeholderTitle: stakeholder.title,
+        stakeholderPrice: stakeholder.price,
+      },
+    });
   };
 
   const handleBack = () => {
@@ -113,11 +117,7 @@ const MembershipStep2 = () => {
               {stakeholders.map((stakeholder) => (
                 <div
                   key={stakeholder.id}
-                  className={`bg-white rounded-lg shadow-md overflow-hidden border-2 transition-all hover:shadow-lg ${
-                    selectedStakeholder === stakeholder.id
-                      ? "border-[#4CAF50]"
-                      : "border-transparent"
-                  }`}
+                  className="bg-white rounded-lg shadow-md overflow-hidden border-2 border-transparent transition-all hover:shadow-lg hover:border-[#4CAF50]"
                 >
                   {/* Card Image */}
                   <div className="h-40 overflow-hidden">
@@ -147,13 +147,9 @@ const MembershipStep2 = () => {
 
                       <button
                         onClick={() => handleSelect(stakeholder)}
-                        className={`w-full py-2 px-4 rounded-md border-2 font-semibold transition-colors ${
-                          selectedStakeholder === stakeholder.id
-                            ? "bg-[#4CAF50] text-white border-[#4CAF50]"
-                            : "bg-white text-[#4CAF50] border-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
-                        }`}
+                        className="w-full py-2 px-4 rounded-md border-2 font-semibold transition-colors bg-white text-[#4CAF50] border-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
                       >
-                        {selectedStakeholder === stakeholder.id ? "Selected" : "Select"}
+                        Select
                       </button>
                     </div>
                   </div>
