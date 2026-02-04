@@ -5,14 +5,14 @@ import { ArrowLeft, CreditCard, Save } from "lucide-react";
 const MembershipStep4 = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { stakeholderId, stakeholderTitle, stakeholderPrice, formData, subscriptions } = location.state || {};
+  const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice, stakeholderFormData, subscriptions } = location.state || {};
 
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleBack = () => {
     navigate("/step-3", {
-      state: { stakeholderId, stakeholderTitle, stakeholderPrice }
+      state: { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice }
     });
   };
 
@@ -24,13 +24,19 @@ const MembershipStep4 = () => {
     
     setIsProcessing(true);
     
-    // Prepare membership data
+    // Prepare membership data - ALL data from Step 1 to Step 4
     const membershipData = {
+      // Step 1 - Personal Information
+      personalInfo: personalInfo || {},
+      // Step 2 - Stakeholder Selection
       stakeholderId,
       stakeholder: stakeholderTitle,
       price: stakeholderPrice,
-      formData,
-      subscriptions,
+      // Step 3 - Stakeholder Specific Details
+      stakeholderFormData: stakeholderFormData || {},
+      // Step 3 - Subscriptions
+      subscriptions: subscriptions || {},
+      // Meta info
       status: "pending",
       createdAt: new Date().toISOString(),
     };
