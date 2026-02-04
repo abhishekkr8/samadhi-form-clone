@@ -24,10 +24,10 @@ const freelancerTypeOptions = ["Developer", "Designer", "Writer", "Consultant", 
 const experienceLevelOptions = ["Entry Level", "Intermediate", "Experienced", "Expert"];
 const availabilityOptions = ["Full Time", "Part Time", "Freelance", "Contract"];
 
-// Common fields that appear in all stakeholder forms
+// Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
 const commonFields = [
-  { name: "category", label: "Category", type: "multiselect", options: categoryOptions, required: true, helperText: "You Can Choose Multiple Area Of Interest" },
-  { name: "subCategory", label: "Sub Category", type: "multiselect", options: [], required: true, helperText: "You Can Choose Multiple Sub-Categories", dependsOn: "category" },
+  { name: "category", label: "Category", type: "multiselect", options: categoryOptions, required: true, helperText: "You Can Choose Multiple Area Of Interest", halfWidth: true },
+  { name: "subCategory", label: "Sub Category", type: "multiselect", options: [], required: true, helperText: "You Can Choose Multiple Sub-Categories", dependsOn: "category", halfWidth: true },
   { name: "describeNeed", label: "Describe Your Need", type: "textarea", required: true, placeholder: "You May Describe Your Future Needs/Requirements Here", fullWidth: true },
 ];
 
@@ -61,13 +61,14 @@ const stakeholderForms = {
     title: "Educational Institution Details",
     icon: Building,
     fields: [
-      { name: "institutionName", label: "Institution Name", type: "text", required: true },
+      { name: "institutionName", label: "Institution Name", type: "text", required: true, placeholder: "Enter institution name" },
       { name: "institutionType", label: "Institution Type", type: "select", options: ["School", "College", "University", "Training Institute", "Other"], required: true },
-      { name: "accreditation", label: "Accreditation", type: "text", required: false },
-      { name: "studentCount", label: "Number of Students", type: "text", required: true },
-      { name: "website", label: "Website URL", type: "text", required: false },
-      { name: "contactPerson", label: "Contact Person Name", type: "text", required: true },
-      { name: "designation", label: "Designation", type: "text", required: true },
+      { name: "affiliatedUniversity", label: "Affiliated University/Board", type: "text", required: true, placeholder: "Enter affiliated university/board" },
+      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
+      { name: "coursesOffered", label: "Courses Offered", type: "textarea", required: true, placeholder: "Enter courses offered" },
+      { name: "departments", label: "Departments/Streams", type: "text", required: true, placeholder: "Enter departments/streams" },
+      { name: "totalStudents", label: "Total Students (Approx)", type: "text", required: true, placeholder: "Enter total students (approx)" },
+      { name: "institutionLocation", label: "Institution Location", type: "text", required: true, placeholder: "Enter institution location" },
       ...commonFields,
     ],
   },
@@ -294,7 +295,7 @@ const MembershipStep3 = () => {
                   {stakeholderForm.fields.map((field) => (
                     <div
                       key={field.name}
-                      className={field.type === "textarea" || field.fullWidth ? "md:col-span-2" : ""}
+                      className={field.fullWidth || (field.type === "textarea" && !field.halfWidth) ? "md:col-span-2" : ""}
                     >
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {field.label}
