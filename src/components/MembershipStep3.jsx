@@ -26,6 +26,8 @@ const availabilityOptions = ["Full Time", "Part Time", "Freelance", "Contract"];
 const startupTypeOptions = ["Product Based", "Service Based", "Hybrid", "E-Commerce", "SaaS", "Other"];
 const startupStageOptions = ["Idea Stage", "Prototype", "MVP", "Early Revenue", "Growth Stage", "Established"];
 const incubationTypeOptions = ["Government", "Private", "Academic", "Corporate", "Non-Profit", "Other"];
+const providerTypeOptions = ["Product Provider", "Service Provider", "Both", "Consultant", "Agency", "Other"];
+const clientTypeOptions = ["B2B", "B2C", "B2G", "Enterprise", "SME", "Startups", "All"];
 
 // Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
 const commonFields = [
@@ -105,12 +107,12 @@ const stakeholderForms = {
     title: "Service / Product Provider Details",
     icon: Briefcase,
     fields: [
-      { name: "companyName", label: "Company Name", type: "text", required: true },
-      { name: "serviceType", label: "Service / Product Type", type: "select", options: ["Software", "Hardware", "Consulting", "Marketing", "Legal", "Finance", "HR", "Other"], required: true },
-      { name: "experience", label: "Years in Business", type: "text", required: true },
-      { name: "clientele", label: "Target Clientele", type: "textarea", required: true },
-      { name: "offerings", label: "Key Offerings", type: "textarea", required: true },
-      { name: "website", label: "Website URL", type: "text", required: false },
+      { name: "companyBrandName", label: "Company/Brand Name", type: "text", required: true, placeholder: "Enter company/brand name" },
+      { name: "providerType", label: "Provider Type", type: "select", options: providerTypeOptions, required: true },
+      { name: "servicesProductsOffered", label: "Services/Products Offered", type: "textarea", required: true, placeholder: "Enter services/products offered" },
+      { name: "yearsExperience", label: "Years of Experience", type: "text", required: true, placeholder: "Enter years of experience" },
+      { name: "clientType", label: "Client Type", type: "select", options: clientTypeOptions, required: true },
+      { name: "operatingLocation", label: "Operating Location", type: "text", required: true, placeholder: "Enter operating location" },
       ...commonFields,
     ],
   },
