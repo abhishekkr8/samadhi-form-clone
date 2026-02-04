@@ -232,7 +232,21 @@ const MembershipStep3 = () => {
       subCategories: selectedSubCategories,
       subscriptions,
     });
-    // Navigate to next step or confirmation
+    // Navigate to Step 4 payment page
+    navigate("/step-4", {
+      state: {
+        stakeholderId,
+        stakeholderTitle,
+        stakeholderPrice,
+        formData: {
+          ...formData,
+          categories: selectedCategories,
+          subCategories: selectedSubCategories,
+        },
+        subscriptions,
+      }
+    });
+  };
   };
 
   if (!stakeholderId) {
