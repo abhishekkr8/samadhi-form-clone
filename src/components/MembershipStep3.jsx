@@ -25,6 +25,7 @@ const experienceLevelOptions = ["Entry Level", "Intermediate", "Experienced", "E
 const availabilityOptions = ["Full Time", "Part Time", "Freelance", "Contract"];
 const startupTypeOptions = ["Product Based", "Service Based", "Hybrid", "E-Commerce", "SaaS", "Other"];
 const startupStageOptions = ["Idea Stage", "Prototype", "MVP", "Early Revenue", "Growth Stage", "Established"];
+const incubationTypeOptions = ["Government", "Private", "Academic", "Corporate", "Non-Profit", "Other"];
 
 // Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
 const commonFields = [
@@ -90,13 +91,13 @@ const stakeholderForms = {
     title: "Incubation Centre Details",
     icon: Building,
     fields: [
-      { name: "centreName", label: "Centre Name", type: "text", required: true },
-      { name: "hostInstitution", label: "Host Institution", type: "text", required: true },
-      { name: "established", label: "Year Established", type: "text", required: true },
-      { name: "startupsIncubated", label: "Number of Startups Incubated", type: "text", required: true },
-      { name: "focusAreas", label: "Focus Areas", type: "textarea", required: true },
-      { name: "facilities", label: "Facilities Offered", type: "textarea", required: false },
-      { name: "website", label: "Website URL", type: "text", required: false },
+      { name: "incubationCentreName", label: "Incubation Centre Name", type: "text", required: true, placeholder: "Enter incubation centre name" },
+      { name: "incubationType", label: "Incubation Type", type: "select", options: incubationTypeOptions, required: true },
+      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
+      { name: "focusAreas", label: "Focus Areas", type: "text", required: true, placeholder: "Enter focus areas" },
+      { name: "startupStagesSupported", label: "Startup Stages Supported", type: "text", required: true, placeholder: "Enter startup stages supported" },
+      { name: "facilitiesProvided", label: "Facilities Provided", type: "text", required: true, placeholder: "Enter facilities provided" },
+      { name: "centreLocation", label: "Centre Location", type: "text", required: true, placeholder: "Enter centre location" },
       ...commonFields,
     ],
   },
