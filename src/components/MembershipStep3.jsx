@@ -30,6 +30,9 @@ const providerTypeOptions = ["Product Provider", "Service Provider", "Both", "Co
 const clientTypeOptions = ["B2B", "B2C", "B2G", "Enterprise", "SME", "Startups", "All"];
 const organizationTypeOptions = ["Private", "Public", "Government", "MNC", "Partnership", "Proprietorship", "Other"];
 const companySizeOptions = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
+const investorTypeOptions = ["Angel Investor", "Venture Capital", "Private Equity", "Corporate Investor", "Government Fund", "Other"];
+const investmentStageOptions = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C+", "Growth Stage"];
+const investmentSizeOptions = ["Under 10 Lakhs", "10-50 Lakhs", "50 Lakhs - 1 Cr", "1-5 Cr", "5-10 Cr", "10+ Cr"];
 
 // Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
 const commonFields = [
@@ -135,13 +138,11 @@ const stakeholderForms = {
     title: "Project Partner Details",
     icon: Users,
     fields: [
-      { name: "organizationName", label: "Organization Name", type: "text", required: true },
-      { name: "organizationType", label: "Organization Type", type: "select", options: ["NGO", "Government", "Corporate", "Academic", "Other"], required: true },
-      { name: "projectArea", label: "Project Area of Interest", type: "textarea", required: true },
-      { name: "pastProjects", label: "Past Project Experience", type: "textarea", required: false },
-      { name: "collaborationType", label: "Collaboration Type", type: "select", options: ["Funding Partner", "Implementation Partner", "Knowledge Partner", "Resource Partner"], required: true },
-      { name: "contactPerson", label: "Contact Person", type: "text", required: true },
-      { name: "designation", label: "Designation", type: "text", required: true },
+      { name: "investorType", label: "Investor Type", type: "select", options: investorTypeOptions, required: true },
+      { name: "preferredInvestmentStage", label: "Preferred Investment Stage", type: "select", options: investmentStageOptions, required: true },
+      { name: "typicalInvestmentSize", label: "Typical Investment Size", type: "select", options: investmentSizeOptions, required: true },
+      { name: "preferredSectors", label: "Preferred Sectors", type: "text", required: true, placeholder: "Enter preferred sectors" },
+      { name: "preferredGeography", label: "Preferred Geography", type: "text", required: true, placeholder: "Enter preferred geography" },
       ...commonFields,
     ],
   },
