@@ -23,6 +23,8 @@ const preferredModeOptions = ["Online", "Offline", "Hybrid"];
 const freelancerTypeOptions = ["Developer", "Designer", "Writer", "Consultant", "Marketing", "Finance", "Legal", "Other"];
 const experienceLevelOptions = ["Entry Level", "Intermediate", "Experienced", "Expert"];
 const availabilityOptions = ["Full Time", "Part Time", "Freelance", "Contract"];
+const startupTypeOptions = ["Product Based", "Service Based", "Hybrid", "E-Commerce", "SaaS", "Other"];
+const startupStageOptions = ["Idea Stage", "Prototype", "MVP", "Early Revenue", "Growth Stage", "Established"];
 
 // Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
 const commonFields = [
@@ -76,12 +78,11 @@ const stakeholderForms = {
     title: "Startup / MSME Details",
     icon: Briefcase,
     fields: [
-      { name: "companyName", label: "Company Name", type: "text", required: true },
-      { name: "registrationNumber", label: "Registration Number", type: "text", required: false },
-      { name: "sector", label: "Industry Sector", type: "select", options: ["Technology", "Healthcare", "Education", "Finance", "Manufacturing", "Retail", "Services", "Other"], required: true },
-      { name: "stage", label: "Business Stage", type: "select", options: ["Idea Stage", "Prototype", "Early Revenue", "Growth Stage", "Established"], required: true },
-      { name: "teamSize", label: "Team Size", type: "text", required: true },
-      { name: "funding", label: "Funding Status", type: "select", options: ["Bootstrapped", "Seed Funded", "Series A", "Series B+", "Not Applicable"], required: false },
+      { name: "startupType", label: "Startup Type", type: "select", options: startupTypeOptions, required: true },
+      { name: "startupStage", label: "Startup Stage", type: "select", options: startupStageOptions, required: true },
+      { name: "businessLocation", label: "Business Location", type: "text", required: true, placeholder: "Enter business location" },
+      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
+      { name: "industryDomain", label: "Industry/Domain", type: "text", required: true, placeholder: "Enter industry/domain" },
       ...commonFields,
     ],
   },
