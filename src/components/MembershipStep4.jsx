@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Bell, Newspaper, Calendar, Wrench, BriefcaseBusiness, FileText, Megaphone, Layers } from "lucide-react";
 
 const categoryOptions = [
-  "Technology", "Business", "Marketing", "Finance", "Legal", "HR", "Design", "Content", "Research", "Other"
+  "Business", "Content", "Design", "Finance", "HR", "Legal", "Marketing", "Other", "Research", "Technology"
 ];
 
 const subCategoryOptions = {
