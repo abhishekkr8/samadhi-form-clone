@@ -1,49 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Bell, Newspaper, Calendar, Wrench, BriefcaseBusiness, FileText, Megaphone, Layers } from "lucide-react";
-
-const categoryOptions = [
-  "Business", "Content", "Design", "Finance", "HR", "Legal", "Marketing", "Other", "Research", "Technology"
-];
-
-const subCategoryOptions = {
-  Technology: ["Web Development", "Mobile Development", "AI/ML", "Cloud Computing", "Cybersecurity", "Data Science"],
-  Business: ["Company incorporation", "Business Strategy", "Operations", "Project Management", "Consulting"],
-  Marketing: ["Digital Marketing", "Content Marketing", "SEO/SEM", "Social Media", "Branding"],
-  Finance: ["Accounting", "Investment", "Taxation", "Auditing", "Financial Planning"],
-  Legal: ["Company Law", "IPR", "Contract Law", "Compliance", "Litigation"],
-  HR: ["Recruitment", "Training", "Payroll", "Employee Relations"],
-  Design: ["UI/UX", "Graphic Design", "Product Design", "Branding"],
-  Content: ["Copywriting", "Technical Writing", "Video Production", "Photography"],
-  Research: ["Market Research", "Academic Research", "Product Research"],
-  Other: ["Other Services"]
-};
-
-const subscriptionOptions = [
-  { id: "newsletter", label: "Newsletter & Updates", icon: Newspaper },
-  { id: "events", label: "Events & Webinars", icon: Calendar },
-  { id: "resources", label: "Resources & Tools", icon: Wrench },
-  { id: "career", label: "Career Opportunities", icon: BriefcaseBusiness },
-  { id: "tenders", label: "Tenders/Wedding Info", icon: FileText },
-  { id: "advertisements", label: "Advertisements", icon: Megaphone },
-];
+import { ArrowLeft, Layers, Loader2 } from "lucide-react";
+import { getCommonSchema } from "../services/api";
 
 const MembershipStep4 = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice, stakeholderFormData } = location.state || {};
 
+  const [schema, setSchema] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+  const [customCategory, setCustomCategory] = useState("");
+  const [customSubCategory, setCustomSubCategory] = useState("");
   const [describeNeed, setDescribeNeed] = useState("");
-  const [subscriptions, setSubscriptions] = useState({
-    newsletter: true,
-    events: true,
-    resources: false,
-    career: false,
-    tenders: true,
-    advertisements: false,
-  });
+
+  useEffect(() => {
+    const fetchSchema = async () => {
+      try {
+        setLoading(true);
+        const data = await getCommonSchema();
+        setSchema(data.fields);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSchema();
+  }, []);
 
   const handleBack = () => {
     navigate("/step-3", {
@@ -51,25 +38,14 @@ const MembershipStep4 = () => {
     });
   };
 
-  // Get available sub-categories based on selected categories
-  const getAvailableSubCategories = () => {
-    let subs = [];
-    selectedCategories.forEach(cat => {
-      if (subCategoryOptions[cat]) {
-        subs = [...subs, ...subCategoryOptions[cat]];
-      }
-    });
-    return [...new Set(subs)];
-  };
+  // Get options from schema (sorted alphabetically)
+  const categoryOptions = (schema?.category?.options || []).sort();
+  const subCategoryOptions = (schema?.sub_category?.options || []).sort();
 
   const handleCategoryChange = (category) => {
     setSelectedCategories(prev => {
       if (prev.includes(category)) {
-        const newCategories = prev.filter(c => c !== category);
-        // Also remove sub-categories that belong to removed category
-        const validSubs = getAvailableSubCategories();
-        setSelectedSubCategories(curr => curr.filter(s => validSubs.includes(s)));
-        return newCategories;
+        return prev.filter(c => c !== category);
       }
       return [...prev, category];
     });
@@ -84,17 +60,14 @@ const MembershipStep4 = () => {
     });
   };
 
-  const handleSubscriptionChange = (id) => {
-    setSubscriptions((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Step 4 Submitted:", {
       categories: selectedCategories,
       subCategories: selectedSubCategories,
+      customCategory,
+      customSubCategory,
       describeNeed,
-      subscriptions,
     });
     // Navigate to Step 5 payment page
     navigate("/step-5", {
@@ -105,11 +78,12 @@ const MembershipStep4 = () => {
         stakeholderPrice,
         stakeholderFormData: {
           ...stakeholderFormData,
-          categories: selectedCategories,
-          subCategories: selectedSubCategories,
-          describeNeed,
+          category: selectedCategories,
+          custom_category: customCategory,
+          sub_category: selectedSubCategories,
+          custom_sub_category: customSubCategory,
+          describe_your_need: describeNeed,
         },
-        subscriptions,
       }
     });
   };
@@ -127,6 +101,33 @@ const MembershipStep4 = () => {
               Go to Step 1
             </button>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-[#4CAF50]" />
+          <span className="text-gray-600">Loading form...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <p className="text-red-600 mb-4">Error: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#4CAF50] text-white px-6 py-2 rounded-md hover:bg-[#43A047]"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
@@ -175,7 +176,7 @@ const MembershipStep4 = () => {
                   {/* Category */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category <span className="text-red-500">*</span>
+                      {schema?.category?.label || "Category"} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <select
@@ -206,12 +207,28 @@ const MembershipStep4 = () => {
                       </div>
                     )}
                     <p className="text-sm text-blue-600 mt-1">You Can Choose Multiple Area Of Interest</p>
+                    
+                    {/* Custom Category - shown when "Other" is selected */}
+                    {selectedCategories.includes("Other") && (
+                      <div className="mt-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          {schema?.custom_category?.label || "Specify Custom Category"}
+                        </label>
+                        <input
+                          type="text"
+                          value={customCategory}
+                          onChange={(e) => setCustomCategory(e.target.value)}
+                          placeholder="Enter your custom category"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Sub Category */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sub Category <span className="text-red-500">*</span>
+                      {schema?.sub_category?.label || "Sub-Category"} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <select
@@ -222,10 +239,9 @@ const MembershipStep4 = () => {
                             e.target.value = "";
                           }
                         }}
-                        disabled={selectedCategories.length === 0}
                       >
-                        <option value="">{selectedCategories.length === 0 ? "Select Category first" : "Select Sub Category"}</option>
-                        {getAvailableSubCategories().map((option) => (
+                        <option value="">Select Sub Category</option>
+                        {subCategoryOptions.map((option) => (
                           <option key={option} value={option} disabled={selectedSubCategories.includes(option)}>
                             {option} {selectedSubCategories.includes(option) ? "✓" : ""}
                           </option>
@@ -243,60 +259,40 @@ const MembershipStep4 = () => {
                       </div>
                     )}
                     <p className="text-sm text-blue-600 mt-1">You Can Choose Multiple Sub-Categories</p>
+                    
+                    {/* Custom Sub Category - shown when "Other" is selected */}
+                    {selectedSubCategories.includes("Other") && (
+                      <div className="mt-3">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          {schema?.custom_sub_category?.label || "Specify Custom Sub-Category"}
+                        </label>
+                        <input
+                          type="text"
+                          value={customSubCategory}
+                          onChange={(e) => setCustomSubCategory(e.target.value)}
+                          placeholder="Enter your custom sub-category"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Describe Your Need */}
                 <div className="mt-6">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Describe Your Need <span className="text-red-500">*</span>
+                    {schema?.describe_your_need?.label || "Describe Your Need"} <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={describeNeed}
                     onChange={(e) => setDescribeNeed(e.target.value)}
                     required
                     rows={4}
+                    minLength={schema?.describe_your_need?.min_length}
+                    maxLength={schema?.describe_your_need?.max_length}
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent resize-y"
                     placeholder="You May Describe Your Future Needs/Requirements Here"
                   />
-                </div>
-              </div>
-
-              {/* Subscription Preferences */}
-              <div className="mb-8 border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center gap-3 mb-1">
-                  <Bell className="w-5 h-5 text-gray-600" />
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    Subscription Preferences
-                  </h2>
-                </div>
-                <p className="text-gray-500 text-sm mb-6 ml-8">
-                  Select what you'd like to receive
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {subscriptionOptions.map((option) => {
-                    const OptionIcon = option.icon;
-                    return (
-                      <label
-                        key={option.id}
-                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all min-h-[56px] ${
-                          subscriptions[option.id]
-                            ? "border-blue-400 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300 bg-white"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={subscriptions[option.id]}
-                          onChange={() => handleSubscriptionChange(option.id)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <OptionIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{option.label}</span>
-                      </label>
-                    );
-                  })}
                 </div>
               </div>
 
@@ -306,7 +302,7 @@ const MembershipStep4 = () => {
                   type="submit"
                   className="bg-[#4CAF50] text-white px-8 py-3 rounded-md font-semibold hover:bg-[#43A047] transition-colors"
                 >
-                  Submit Application
+                  Next Step
                 </button>
               </div>
             </form>
