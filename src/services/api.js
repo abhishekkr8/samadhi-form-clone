@@ -74,7 +74,11 @@ export const registerUser = async (data) => {
   });
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail?.[0]?.msg || "Registration failed");
+    const errorMsg = error.detail?.[0]?.msg 
+      || error.detail 
+      || error.message 
+      || JSON.stringify(error);
+    throw new Error(errorMsg);
   }
   return response.json();
 };
