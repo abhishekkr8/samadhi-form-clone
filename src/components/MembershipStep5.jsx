@@ -51,9 +51,9 @@ const MembershipStep5 = () => {
         
         // Step 4 - Categories
         category: stakeholderFormData?.category || [],
-        custom_category: stakeholderFormData?.custom_category || "",
+        custom_category: stakeholderFormData?.category?.includes("Other") ? (stakeholderFormData?.custom_category || "") : undefined,
         sub_category: stakeholderFormData?.sub_category || [],
-        custom_sub_category: stakeholderFormData?.custom_sub_category || "",
+        custom_sub_category: stakeholderFormData?.sub_category?.includes("Other") ? (stakeholderFormData?.custom_sub_category || "") : undefined,
         describe_your_need: stakeholderFormData?.describe_your_need || "",
         
         // Step 3 - User type specific fields (dynamically added)
@@ -61,6 +61,15 @@ const MembershipStep5 = () => {
       };
 
       console.log("Registering user with data:", registrationData);
+      
+      // Remove undefined values from registration data
+      Object.keys(registrationData).forEach(key => {
+        if (registrationData[key] === undefined) {
+          delete registrationData[key];
+        }
+      });
+      
+      console.log("Cleaned registration data:", registrationData);
       
       // Step 1: Register user
       const registerResponse = await registerUser(registrationData);
