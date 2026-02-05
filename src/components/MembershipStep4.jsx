@@ -79,9 +79,9 @@ const MembershipStep4 = () => {
         stakeholderFormData: {
           ...stakeholderFormData,
           category: selectedCategories,
-          custom_category: selectedCategories.includes("Other") ? customCategory : "",
+          custom_category: selectedCategories.includes("Other") && customCategory ? customCategory : undefined,
           sub_category: selectedSubCategories,
-          custom_sub_category: selectedSubCategories.includes("Other") ? customSubCategory : "",
+          custom_sub_category: selectedSubCategories.includes("Other") && customSubCategory ? customSubCategory : undefined,
           describe_your_need: describeNeed,
         },
       }

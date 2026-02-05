@@ -62,9 +62,9 @@ const MembershipStep5 = () => {
 
       console.log("Registering user with data:", registrationData);
       
-      // Remove undefined values from registration data
+      // Remove undefined AND empty string values from registration data
       Object.keys(registrationData).forEach(key => {
-        if (registrationData[key] === undefined) {
+        if (registrationData[key] === undefined || registrationData[key] === "") {
           delete registrationData[key];
         }
       });
