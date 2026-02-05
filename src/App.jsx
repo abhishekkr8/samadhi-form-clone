@@ -7,6 +7,7 @@ import MembershipStep1 from "./components/MembershipStep1";
 import MembershipStep2 from "./components/MembershipStep2";
 import MembershipStep3 from "./components/MembershipStep3";
 import MembershipStep4 from "./components/MembershipStep4";
+import MembershipStep5 from "./components/MembershipStep5";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/step-4",
     element: <MembershipStep4 />,
+  },
+  {
+    path: "/step-5",
+    element: <MembershipStep5 />,
   },
 ]);
 

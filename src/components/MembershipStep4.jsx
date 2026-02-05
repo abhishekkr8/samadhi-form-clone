@@ -1,14 +1,49 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, CreditCard, Save } from "lucide-react";
+import { ArrowLeft, Bell, Newspaper, Calendar, Wrench, BriefcaseBusiness, FileText, Megaphone, Layers } from "lucide-react";
+
+const categoryOptions = [
+  "Technology", "Business", "Marketing", "Finance", "Legal", "HR", "Design", "Content", "Research", "Other"
+];
+
+const subCategoryOptions = {
+  Technology: ["Web Development", "Mobile Development", "AI/ML", "Cloud Computing", "Cybersecurity", "Data Science"],
+  Business: ["Company incorporation", "Business Strategy", "Operations", "Project Management", "Consulting"],
+  Marketing: ["Digital Marketing", "Content Marketing", "SEO/SEM", "Social Media", "Branding"],
+  Finance: ["Accounting", "Investment", "Taxation", "Auditing", "Financial Planning"],
+  Legal: ["Company Law", "IPR", "Contract Law", "Compliance", "Litigation"],
+  HR: ["Recruitment", "Training", "Payroll", "Employee Relations"],
+  Design: ["UI/UX", "Graphic Design", "Product Design", "Branding"],
+  Content: ["Copywriting", "Technical Writing", "Video Production", "Photography"],
+  Research: ["Market Research", "Academic Research", "Product Research"],
+  Other: ["Other Services"]
+};
+
+const subscriptionOptions = [
+  { id: "newsletter", label: "Newsletter & Updates", icon: Newspaper },
+  { id: "events", label: "Events & Webinars", icon: Calendar },
+  { id: "resources", label: "Resources & Tools", icon: Wrench },
+  { id: "career", label: "Career Opportunities", icon: BriefcaseBusiness },
+  { id: "tenders", label: "Tenders/Wedding Info", icon: FileText },
+  { id: "advertisements", label: "Advertisements", icon: Megaphone },
+];
 
 const MembershipStep4 = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice, stakeholderFormData, subscriptions } = location.state || {};
+  const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice, stakeholderFormData } = location.state || {};
 
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+  const [describeNeed, setDescribeNeed] = useState("");
+  const [subscriptions, setSubscriptions] = useState({
+    newsletter: true,
+    events: true,
+    resources: false,
+    career: false,
+    tenders: true,
+    advertisements: false,
+  });
 
   const handleBack = () => {
     navigate("/step-3", {
@@ -16,62 +51,67 @@ const MembershipStep4 = () => {
     });
   };
 
-  const handleProceedToPayment = () => {
-    if (!agreedToTerms) {
-      alert("Please agree to the Terms & Conditions to proceed.");
-      return;
-    }
-    
-    setIsProcessing(true);
-    
-    // Prepare membership data - ALL data from Step 1 to Step 4
-    const membershipData = {
-      // Step 1 - Personal Information
-      personalInfo: personalInfo || {},
-      // Step 2 - Stakeholder Selection
-      stakeholderId,
-      stakeholder: stakeholderTitle,
-      price: stakeholderPrice,
-      // Step 3 - Stakeholder Specific Details
-      stakeholderFormData: stakeholderFormData || {},
-      // Step 3 - Subscriptions
-      subscriptions: subscriptions || {},
-      // Meta info
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-    
-    // Save to localStorage for now
-    const existingApplications = JSON.parse(localStorage.getItem("membershipApplications") || "[]");
-    existingApplications.push(membershipData);
-    localStorage.setItem("membershipApplications", JSON.stringify(existingApplications));
-    
-    console.log("Membership Data Saved:", membershipData);
-    
-    // TODO: BACKEND API - Add database save API call here
-    // Example:
-    // const response = await fetch('/api/membership/save', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(membershipData)
-    // });
-    // const result = await response.json();
-    
-    // TODO: PAYMENT GATEWAY - Add payment gateway integration here
-    // Example for Razorpay/Stripe:
-    // const paymentResponse = await initiatePayment({
-    //   amount: stakeholderPrice,
-    //   currency: 'INR',
-    //   orderId: result.orderId,
-    //   customerEmail: formData.email,
-    //   customerName: formData.name
-    // });
-    // Redirect to payment page or open payment modal
-    
-    setTimeout(() => {
-      setIsProcessing(false);
-      alert("Data saved to localStorage successfully! Payment gateway will be integrated later.");
-    }, 1000);
+  // Get available sub-categories based on selected categories
+  const getAvailableSubCategories = () => {
+    let subs = [];
+    selectedCategories.forEach(cat => {
+      if (subCategoryOptions[cat]) {
+        subs = [...subs, ...subCategoryOptions[cat]];
+      }
+    });
+    return [...new Set(subs)];
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        const newCategories = prev.filter(c => c !== category);
+        // Also remove sub-categories that belong to removed category
+        const validSubs = getAvailableSubCategories();
+        setSelectedSubCategories(curr => curr.filter(s => validSubs.includes(s)));
+        return newCategories;
+      }
+      return [...prev, category];
+    });
+  };
+
+  const handleSubCategoryChange = (subCategory) => {
+    setSelectedSubCategories(prev => {
+      if (prev.includes(subCategory)) {
+        return prev.filter(s => s !== subCategory);
+      }
+      return [...prev, subCategory];
+    });
+  };
+
+  const handleSubscriptionChange = (id) => {
+    setSubscriptions((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Step 4 Submitted:", {
+      categories: selectedCategories,
+      subCategories: selectedSubCategories,
+      describeNeed,
+      subscriptions,
+    });
+    // Navigate to Step 5 payment page
+    navigate("/step-5", {
+      state: {
+        personalInfo,
+        stakeholderId,
+        stakeholderTitle,
+        stakeholderPrice,
+        stakeholderFormData: {
+          ...stakeholderFormData,
+          categories: selectedCategories,
+          subCategories: selectedSubCategories,
+          describeNeed,
+        },
+        subscriptions,
+      }
+    });
   };
 
   if (!stakeholderId) {
@@ -94,7 +134,7 @@ const MembershipStep4 = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Card Container */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           {/* Green Header */}
@@ -103,7 +143,7 @@ const MembershipStep4 = () => {
               Membership Application - Step 4
             </h1>
             <p className="text-green-100 text-sm mt-2">
-              Complete your payment
+              Select your preferences and interests
             </p>
           </div>
 
@@ -118,72 +158,158 @@ const MembershipStep4 = () => {
               Back to Step 3
             </button>
 
-            {/* Payment Information Section */}
-            <div className="border border-gray-200 rounded-lg p-6 mb-6">
-              <div className="flex items-center gap-3 mb-1">
-                <CreditCard className="w-5 h-5 text-gray-600" />
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Payment Information
-                </h2>
-              </div>
-              <p className="text-gray-500 text-sm mb-6 ml-8">
-                Review the amount and proceed to payment
-              </p>
+            <form onSubmit={handleSubmit}>
+              {/* Category & Sub Category Section */}
+              <div className="mb-8 border border-gray-200 rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-1">
+                  <Layers className="w-5 h-5 text-gray-600" />
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Category & Interests
+                  </h2>
+                </div>
+                <p className="text-gray-500 text-sm mb-6 ml-8">
+                  Select your areas of interest
+                </p>
 
-              {/* Amount Box */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Category */}
                   <div>
-                    <p className="text-sm text-green-700 mb-1">Total Amount to Pay</p>
-                    <p className="text-3xl font-bold text-green-800">
-                      ₹{stakeholderPrice?.toLocaleString("en-IN")}
-                    </p>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleCategoryChange(e.target.value);
+                            e.target.value = "";
+                          }
+                        }}
+                      >
+                        <option value="">Select Category</option>
+                        {categoryOptions.map((option) => (
+                          <option key={option} value={option} disabled={selectedCategories.includes(option)}>
+                            {option} {selectedCategories.includes(option) ? "✓" : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {selectedCategories.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedCategories.map(cat => (
+                          <span key={cat} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1">
+                            {cat}
+                            <button type="button" onClick={() => handleCategoryChange(cat)} className="text-green-600 hover:text-green-800">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-sm text-blue-600 mt-1">You Can Choose Multiple Area Of Interest</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-600 mb-2">Selected Stakeholder:</p>
-                    <span className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md font-medium">
-                      {stakeholderTitle}
-                    </span>
+
+                  {/* Sub Category */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sub Category <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleSubCategoryChange(e.target.value);
+                            e.target.value = "";
+                          }
+                        }}
+                        disabled={selectedCategories.length === 0}
+                      >
+                        <option value="">{selectedCategories.length === 0 ? "Select Category first" : "Select Sub Category"}</option>
+                        {getAvailableSubCategories().map((option) => (
+                          <option key={option} value={option} disabled={selectedSubCategories.includes(option)}>
+                            {option} {selectedSubCategories.includes(option) ? "✓" : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {selectedSubCategories.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedSubCategories.map(sub => (
+                          <span key={sub} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1">
+                            {sub}
+                            <button type="button" onClick={() => handleSubCategoryChange(sub)} className="text-green-600 hover:text-green-800">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-sm text-blue-600 mt-1">You Can Choose Multiple Sub-Categories</p>
                   </div>
+                </div>
+
+                {/* Describe Your Need */}
+                <div className="mt-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Describe Your Need <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={describeNeed}
+                    onChange={(e) => setDescribeNeed(e.target.value)}
+                    required
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent resize-y"
+                    placeholder="You May Describe Your Future Needs/Requirements Here"
+                  />
                 </div>
               </div>
 
-              {/* Terms & Conditions */}
-              <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                <input
-                  type="checkbox"
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-0.5 w-5 h-5 text-[#4CAF50] border-gray-300 rounded focus:ring-[#4CAF50]"
-                />
-                <span className="text-sm text-gray-700">
-                  I agree to the{" "}
-                  <a href="#" className="text-blue-600 font-medium hover:underline">
-                    Terms & Conditions
-                  </a>{" "}
-                  and understand that membership activation is subject to administrative approval.
-                </span>
-              </label>
-            </div>
+              {/* Subscription Preferences */}
+              <div className="mb-8 border border-gray-200 rounded-lg p-6">
+                <div className="flex items-center gap-3 mb-1">
+                  <Bell className="w-5 h-5 text-gray-600" />
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    Subscription Preferences
+                  </h2>
+                </div>
+                <p className="text-gray-500 text-sm mb-6 ml-8">
+                  Select what you'd like to receive
+                </p>
 
-            {/* Proceed Button */}
-            <div className="flex flex-col items-center gap-3">
-              <button
-                onClick={handleProceedToPayment}
-                disabled={isProcessing}
-                className={`flex items-center gap-2 px-8 py-3 rounded-md font-semibold transition-colors ${
-                  isProcessing
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#4CAF50] hover:bg-[#43A047]"
-                } text-white`}
-              >
-                <Save className="w-5 h-5" />
-                {isProcessing ? "Processing..." : "Save Details & Proceed to Payment"}
-              </button>
-              <p className="text-sm text-gray-500">
-                Your data will be saved first, then you'll be redirected to payment page
-              </p>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {subscriptionOptions.map((option) => {
+                    const OptionIcon = option.icon;
+                    return (
+                      <label
+                        key={option.id}
+                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all min-h-[56px] ${
+                          subscriptions[option.id]
+                            ? "border-blue-400 bg-blue-50"
+                            : "border-gray-200 hover:border-gray-300 bg-white"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={subscriptions[option.id]}
+                          onChange={() => handleSubscriptionChange(option.id)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <OptionIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{option.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="bg-[#4CAF50] text-white px-8 py-3 rounded-md font-semibold hover:bg-[#43A047] transition-colors"
+                >
+                  Submit Application
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
