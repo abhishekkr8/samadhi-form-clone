@@ -84,7 +84,7 @@ const MembershipStep5 = () => {
         payment_type: "subscription",
         amount_inr: stakeholderPrice,
         currency: "INR",
-        receipt: `membership_${registerResponse.id}_${Date.now()}`,
+        receipt: `mbr_${registerResponse.id.slice(0, 8)}_${Date.now()}`,
       };
       
       console.log("Creating payment order:", paymentOrderData);
