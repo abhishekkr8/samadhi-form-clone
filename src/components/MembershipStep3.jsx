@@ -1,23 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, User, Building, GraduationCap, Briefcase, Users, Bell, Newspaper, Calendar, Wrench, BriefcaseBusiness, FileText, Megaphone } from "lucide-react";
-
-const categoryOptions = [
-  "Technology", "Business", "Marketing", "Finance", "Legal", "HR", "Design", "Content", "Research", "Other"
-];
-
-const subCategoryOptions = {
-  Technology: ["Web Development", "Mobile Development", "AI/ML", "Cloud Computing", "Cybersecurity", "Data Science"],
-  Business: ["Company incorporation", "Business Strategy", "Operations", "Project Management", "Consulting"],
-  Marketing: ["Digital Marketing", "Content Marketing", "SEO/SEM", "Social Media", "Branding"],
-  Finance: ["Accounting", "Investment", "Taxation", "Auditing", "Financial Planning"],
-  Legal: ["Company Law", "IPR", "Contract Law", "Compliance", "Litigation"],
-  HR: ["Recruitment", "Training", "Payroll", "Employee Relations"],
-  Design: ["UI/UX", "Graphic Design", "Product Design", "Branding"],
-  Content: ["Copywriting", "Technical Writing", "Video Production", "Photography"],
-  Research: ["Market Research", "Academic Research", "Product Research"],
-  Other: ["Other Services"]
-};
+import { ArrowLeft, User, Building, GraduationCap, Briefcase, Users } from "lucide-react";
 
 const preferredModeOptions = ["Online", "Offline", "Hybrid"];
 const freelancerTypeOptions = ["Developer", "Designer", "Writer", "Consultant", "Marketing", "Finance", "Legal", "Other"];
@@ -34,13 +17,6 @@ const investorTypeOptions = ["Angel Investor", "Venture Capital", "Private Equit
 const investmentStageOptions = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C+", "Growth Stage"];
 const investmentSizeOptions = ["Under 10 Lakhs", "10-50 Lakhs", "50 Lakhs - 1 Cr", "1-5 Cr", "5-10 Cr", "10+ Cr"];
 
-// Common fields that appear in all stakeholder forms (Category & Sub Category on same row)
-const commonFields = [
-  { name: "category", label: "Category", type: "multiselect", options: categoryOptions, required: true, helperText: "You Can Choose Multiple Area Of Interest", halfWidth: true },
-  { name: "subCategory", label: "Sub Category", type: "multiselect", options: [], required: true, helperText: "You Can Choose Multiple Sub-Categories", dependsOn: "category", halfWidth: true },
-  { name: "describeNeed", label: "Describe Your Need", type: "textarea", required: true, placeholder: "You May Describe Your Future Needs/Requirements Here", fullWidth: true },
-];
-
 const stakeholderForms = {
   students: {
     title: "Student Details",
@@ -52,7 +28,6 @@ const stakeholderForms = {
       { name: "keySkills", label: "Key Skills", type: "textarea", required: true, placeholder: "Enter key skills" },
       { name: "preferredMode", label: "Preferred Mode", type: "select", options: preferredModeOptions, required: true },
       { name: "experience", label: "Experience/Projects (if any)", type: "textarea", required: false, placeholder: "Enter experience/projects (if any)" },
-      ...commonFields,
     ],
   },
   freelancers: {
@@ -64,7 +39,6 @@ const stakeholderForms = {
       { name: "experienceLevel", label: "Experience Level", type: "select", options: experienceLevelOptions, required: true },
       { name: "availability", label: "Availability", type: "select", options: availabilityOptions, required: true },
       { name: "preferredWorkMode", label: "Preferred Work Mode", type: "select", options: preferredModeOptions, required: true },
-      ...commonFields,
     ],
   },
   educational: {
@@ -79,7 +53,6 @@ const stakeholderForms = {
       { name: "departments", label: "Departments/Streams", type: "text", required: true, placeholder: "Enter departments/streams" },
       { name: "totalStudents", label: "Total Students (Approx)", type: "text", required: true, placeholder: "Enter total students (approx)" },
       { name: "institutionLocation", label: "Institution Location", type: "text", required: true, placeholder: "Enter institution location" },
-      ...commonFields,
     ],
   },
   startups: {
@@ -91,7 +64,6 @@ const stakeholderForms = {
       { name: "businessLocation", label: "Business Location", type: "text", required: true, placeholder: "Enter business location" },
       { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
       { name: "industryDomain", label: "Industry/Domain", type: "text", required: true, placeholder: "Enter industry/domain" },
-      ...commonFields,
     ],
   },
   incubation: {
@@ -105,7 +77,6 @@ const stakeholderForms = {
       { name: "startupStagesSupported", label: "Startup Stages Supported", type: "text", required: true, placeholder: "Enter startup stages supported" },
       { name: "facilitiesProvided", label: "Facilities Provided", type: "text", required: true, placeholder: "Enter facilities provided" },
       { name: "centreLocation", label: "Centre Location", type: "text", required: true, placeholder: "Enter centre location" },
-      ...commonFields,
     ],
   },
   "service-providers": {
@@ -118,7 +89,6 @@ const stakeholderForms = {
       { name: "yearsExperience", label: "Years of Experience", type: "text", required: true, placeholder: "Enter years of experience" },
       { name: "clientType", label: "Client Type", type: "select", options: clientTypeOptions, required: true },
       { name: "operatingLocation", label: "Operating Location", type: "text", required: true, placeholder: "Enter operating location" },
-      ...commonFields,
     ],
   },
   industry: {
@@ -131,7 +101,6 @@ const stakeholderForms = {
       { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
       { name: "companySize", label: "Company Size", type: "select", options: companySizeOptions, required: true },
       { name: "operationalLocation", label: "Operational Location", type: "text", required: true, placeholder: "Enter operational location" },
-      ...commonFields,
     ],
   },
   "project-partner": {
@@ -143,19 +112,9 @@ const stakeholderForms = {
       { name: "typicalInvestmentSize", label: "Typical Investment Size", type: "select", options: investmentSizeOptions, required: true },
       { name: "preferredSectors", label: "Preferred Sectors", type: "text", required: true, placeholder: "Enter preferred sectors" },
       { name: "preferredGeography", label: "Preferred Geography", type: "text", required: true, placeholder: "Enter preferred geography" },
-      ...commonFields,
     ],
   },
 };
-
-const subscriptionOptions = [
-  { id: "newsletter", label: "Newsletter & Updates", icon: Newspaper },
-  { id: "events", label: "Events & Webinars", icon: Calendar },
-  { id: "resources", label: "Resources & Tools", icon: Wrench },
-  { id: "career", label: "Career Opportunities", icon: BriefcaseBusiness },
-  { id: "tenders", label: "Tenders/Wedding Info", icon: FileText },
-  { id: "advertisements", label: "Advertisements", icon: Megaphone },
-];
 
 const MembershipStep3 = () => {
   const navigate = useNavigate();
@@ -163,59 +122,12 @@ const MembershipStep3 = () => {
   const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice } = location.state || {};
 
   const [formData, setFormData] = useState({});
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
-  const [subscriptions, setSubscriptions] = useState({
-    newsletter: true,
-    events: true,
-    resources: false,
-    career: false,
-    tenders: true,
-    advertisements: false,
-  });
 
   const stakeholderForm = stakeholderForms[stakeholderId] || stakeholderForms.students;
   const IconComponent = stakeholderForm.icon;
 
-  // Get available sub-categories based on selected categories
-  const getAvailableSubCategories = () => {
-    let subs = [];
-    selectedCategories.forEach(cat => {
-      if (subCategoryOptions[cat]) {
-        subs = [...subs, ...subCategoryOptions[cat]];
-      }
-    });
-    return [...new Set(subs)];
-  };
-
-  const handleCategoryChange = (category) => {
-    setSelectedCategories(prev => {
-      if (prev.includes(category)) {
-        const newCategories = prev.filter(c => c !== category);
-        // Also remove sub-categories that belong to removed category
-        const validSubs = getAvailableSubCategories();
-        setSelectedSubCategories(curr => curr.filter(s => validSubs.includes(s)));
-        return newCategories;
-      }
-      return [...prev, category];
-    });
-  };
-
-  const handleSubCategoryChange = (subCategory) => {
-    setSelectedSubCategories(prev => {
-      if (prev.includes(subCategory)) {
-        return prev.filter(s => s !== subCategory);
-      }
-      return [...prev, subCategory];
-    });
-  };
-
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubscriptionChange = (id) => {
-    setSubscriptions((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleBack = () => {
@@ -228,23 +140,15 @@ const MembershipStep3 = () => {
       stakeholder: stakeholderTitle,
       price: stakeholderPrice,
       formData,
-      categories: selectedCategories,
-      subCategories: selectedSubCategories,
-      subscriptions,
     });
-    // Navigate to Step 4 payment page
+    // Navigate to Step 4 (Category, Sub Category, Describe Your Need, Subscriptions)
     navigate("/step-4", {
       state: {
         personalInfo,
         stakeholderId,
         stakeholderTitle,
         stakeholderPrice,
-        stakeholderFormData: {
-          ...formData,
-          categories: selectedCategories,
-          subCategories: selectedSubCategories,
-        },
-        subscriptions,
+        stakeholderFormData: formData,
       }
     });
   };
@@ -319,7 +223,7 @@ const MembershipStep3 = () => {
                   {stakeholderForm.fields.map((field) => (
                     <div
                       key={field.name}
-                      className={field.fullWidth || (field.type === "textarea" && !field.halfWidth) ? "md:col-span-2" : ""}
+                      className={field.type === "textarea" ? "md:col-span-2" : ""}
                     >
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {field.label}
@@ -353,79 +257,6 @@ const MembershipStep3 = () => {
                         </select>
                       )}
 
-                      {field.type === "multiselect" && field.name === "category" && (
-                        <div>
-                          <div className="relative">
-                            <select
-                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
-                              onChange={(e) => {
-                                if (e.target.value) {
-                                  handleCategoryChange(e.target.value);
-                                  e.target.value = "";
-                                }
-                              }}
-                            >
-                              <option value="">Select Category</option>
-                              {categoryOptions.map((option) => (
-                                <option key={option} value={option} disabled={selectedCategories.includes(option)}>
-                                  {option} {selectedCategories.includes(option) ? "✓" : ""}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          {selectedCategories.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {selectedCategories.map(cat => (
-                                <span key={cat} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1">
-                                  {cat}
-                                  <button type="button" onClick={() => handleCategoryChange(cat)} className="text-green-600 hover:text-green-800">×</button>
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          {field.helperText && (
-                            <p className="text-sm text-blue-600 mt-1">{field.helperText}</p>
-                          )}
-                        </div>
-                      )}
-
-                      {field.type === "multiselect" && field.name === "subCategory" && (
-                        <div>
-                          <div className="relative">
-                            <select
-                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
-                              onChange={(e) => {
-                                if (e.target.value) {
-                                  handleSubCategoryChange(e.target.value);
-                                  e.target.value = "";
-                                }
-                              }}
-                              disabled={selectedCategories.length === 0}
-                            >
-                              <option value="">{selectedCategories.length === 0 ? "Select Category first" : "Select Sub Category"}</option>
-                              {getAvailableSubCategories().map((option) => (
-                                <option key={option} value={option} disabled={selectedSubCategories.includes(option)}>
-                                  {option} {selectedSubCategories.includes(option) ? "✓" : ""}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          {selectedSubCategories.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {selectedSubCategories.map(sub => (
-                                <span key={sub} className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm flex items-center gap-1">
-                                  {sub}
-                                  <button type="button" onClick={() => handleSubCategoryChange(sub)} className="text-green-600 hover:text-green-800">×</button>
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          {field.helperText && (
-                            <p className="text-sm text-blue-600 mt-1">{field.helperText}</p>
-                          )}
-                        </div>
-                      )}
-
                       {field.type === "textarea" && (
                         <textarea
                           value={formData[field.name] || ""}
@@ -441,51 +272,13 @@ const MembershipStep3 = () => {
                 </div>
               </div>
 
-              {/* Subscription Preferences */}
-              <div className="mb-8 border border-gray-200 rounded-lg p-6">
-                <div className="flex items-center gap-3 mb-1">
-                  <Bell className="w-5 h-5 text-gray-600" />
-                  <h2 className="text-lg font-semibold text-gray-800">
-                    Subscription Preferences
-                  </h2>
-                </div>
-                <p className="text-gray-500 text-sm mb-6 ml-8">
-                  Select what you'd like to receive
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {subscriptionOptions.map((option) => {
-                    const OptionIcon = option.icon;
-                    return (
-                      <label
-                        key={option.id}
-                        className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all min-h-[56px] ${
-                          subscriptions[option.id]
-                            ? "border-blue-400 bg-blue-50"
-                            : "border-gray-200 hover:border-gray-300 bg-white"
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={subscriptions[option.id]}
-                          onChange={() => handleSubscriptionChange(option.id)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <OptionIcon className="w-5 h-5 text-gray-500 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{option.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* Submit Button */}
               <div className="flex justify-end">
                 <button
                   type="submit"
                   className="bg-[#4CAF50] text-white px-8 py-3 rounded-md font-semibold hover:bg-[#43A047] transition-colors"
                 >
-                  Submit Application
+                  Next Step
                 </button>
               </div>
             </form>
