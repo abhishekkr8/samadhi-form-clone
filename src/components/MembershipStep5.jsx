@@ -1,6 +1,7 @@
  import { useState } from "react";
  import { useNavigate, useLocation } from "react-router-dom";
  import { ArrowLeft, CreditCard, Save } from "lucide-react";
+import { registerUser, createPaymentOrder, verifyPayment, loadRazorpayScript } from "../services/api";
  
  const MembershipStep5 = () => {
    const navigate = useNavigate();
@@ -9,6 +10,7 @@
  
    const [agreedToTerms, setAgreedToTerms] = useState(false);
    const [isProcessing, setIsProcessing] = useState(false);
+  const [processingStep, setProcessingStep] = useState(""); // Track current step for UI
  
    const handleBack = () => {
      navigate("/step-4", {
@@ -16,62 +18,133 @@
      });
    };
  
-   const handleProceedToPayment = () => {
+  /**
+   * Main submission handler
+   * Flow: Register User → Create Payment Order → Open Razorpay → Verify Payment
+   */
+  const handleProceedToPayment = async () => {
      if (!agreedToTerms) {
        alert("Please agree to the Terms & Conditions to proceed.");
        return;
      }
      
      setIsProcessing(true);
+    setProcessingStep("Registering user...");
      
-     // Prepare membership data - ALL data from Step 1 to Step 5
-     const membershipData = {
-       // Step 1 - Personal Information
-       personalInfo: personalInfo || {},
-       // Step 2 - Stakeholder Selection
-       stakeholderId,
-       stakeholder: stakeholderTitle,
-       price: stakeholderPrice,
-       // Step 3 & 4 - Stakeholder Specific Details + Categories
-       stakeholderFormData: stakeholderFormData || {},
-       // Step 4 - Subscriptions
-       subscriptions: subscriptions || {},
-       // Meta info
-       status: "pending",
-       createdAt: new Date().toISOString(),
-     };
-     
-     // Save to localStorage for now
-     const existingApplications = JSON.parse(localStorage.getItem("membershipApplications") || "[]");
-     existingApplications.push(membershipData);
-     localStorage.setItem("membershipApplications", JSON.stringify(existingApplications));
-     
-     console.log("Membership Data Saved:", membershipData);
-     
-     // TODO: BACKEND API - Add database save API call here
-     // Example:
-     // const response = await fetch('/api/membership/save', {
-     //   method: 'POST',
-     //   headers: { 'Content-Type': 'application/json' },
-     //   body: JSON.stringify(membershipData)
-     // });
-     // const result = await response.json();
-     
-     // TODO: PAYMENT GATEWAY - Add payment gateway integration here
-     // Example for Razorpay/Stripe:
-     // const paymentResponse = await initiatePayment({
-     //   amount: stakeholderPrice,
-     //   currency: 'INR',
-     //   orderId: result.orderId,
-     //   customerEmail: formData.email,
-     //   customerName: formData.name
-     // });
-     // Redirect to payment page or open payment modal
-     
-     setTimeout(() => {
+    try {
+      // Step 1: Register User via API
+      console.log("🚀 Starting Registration...");
+      const registrationResponse = await registerUser({
+        personalInfo: personalInfo || {},
+        stakeholderId,
+        stakeholderFormData: stakeholderFormData || {},
+      });
+      
+      const userId = registrationResponse.id;
+      console.log("✅ User Registered with ID:", userId);
+      
+      // Step 2: Create Payment Order
+      setProcessingStep("Creating payment order...");
+      console.log("🚀 Creating Payment Order...");
+      const orderResponse = await createPaymentOrder({
+        userId,
+        userType: stakeholderId,
+        amount: stakeholderPrice,
+      });
+      
+      console.log("✅ Payment Order Created:", orderResponse);
+      
+      // Step 3: Load Razorpay SDK
+      setProcessingStep("Loading payment gateway...");
+      const scriptLoaded = await loadRazorpayScript();
+      
+      if (!scriptLoaded) {
+        throw new Error("Failed to load Razorpay SDK");
+      }
+      
+      // Step 4: Open Razorpay Checkout
+      setProcessingStep("Opening payment window...");
+      const options = {
+        key: orderResponse.key_id,
+        amount: orderResponse.amount, // Amount in paise
+        currency: orderResponse.currency,
+        name: "Membership Application",
+        description: `${stakeholderTitle} - Annual Membership`,
+        order_id: orderResponse.order_id,
+        handler: async function (response) {
+          // Payment successful - Verify with backend
+          console.log("💳 Razorpay Payment Response:", response);
+          setProcessingStep("Verifying payment...");
+          
+          try {
+            const verifyResponse = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            
+            if (verifyResponse.verified) {
+              console.log("✅ Payment Verified Successfully!");
+              alert("🎉 Payment Successful! Your membership application has been submitted.");
+              
+              // Save to localStorage as backup
+              const membershipData = {
+                personalInfo: personalInfo || {},
+                stakeholderId,
+                stakeholder: stakeholderTitle,
+                price: stakeholderPrice,
+                stakeholderFormData: stakeholderFormData || {},
+                subscriptions: subscriptions || {},
+                userId,
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                status: "completed",
+                createdAt: new Date().toISOString(),
+              };
+              const existingApplications = JSON.parse(localStorage.getItem("membershipApplications") || "[]");
+              existingApplications.push(membershipData);
+              localStorage.setItem("membershipApplications", JSON.stringify(existingApplications));
+              
+              // Navigate to success or home
+              navigate("/");
+            } else {
+              console.error("❌ Payment Verification Failed");
+              alert("Payment verification failed. Please contact support.");
+            }
+          } catch (verifyError) {
+            console.error("❌ Payment Verification Error:", verifyError);
+            alert(`Payment verification error: ${verifyError.message}`);
+          }
+          
+          setIsProcessing(false);
+          setProcessingStep("");
+        },
+        prefill: {
+          name: personalInfo?.fullName || "",
+          email: personalInfo?.email || "",
+          contact: personalInfo?.mobile || "",
+        },
+        theme: {
+          color: "#4CAF50",
+        },
+        modal: {
+          ondismiss: function () {
+            console.log("⚠️ Payment Modal Dismissed");
+            setIsProcessing(false);
+            setProcessingStep("");
+          },
+        },
+      };
+      
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+      
+    } catch (error) {
+      console.error("❌ Process Error:", error);
+      alert(`Error: ${error.message}`);
        setIsProcessing(false);
-       alert("Data saved to localStorage successfully! Payment gateway will be integrated later.");
-     }, 1000);
+      setProcessingStep("");
+    }
    };
  
    if (!stakeholderId) {
@@ -180,8 +253,8 @@
                  <Save className="w-5 h-5" />
                  {isProcessing ? "Processing..." : "Save Details & Proceed to Payment"}
                </button>
-               <p className="text-sm text-gray-500">
-                 Your data will be saved first, then you'll be redirected to payment page
+                <p className="text-sm text-gray-500 text-center">
+                  {processingStep || "Your data will be saved first, then you'll be redirected to payment"}
                </p>
              </div>
            </div>

@@ -8,6 +8,7 @@ const MembershipStep1 = () => {
     fullName: "",
     email: "",
     mobile: "",
+    password: "",
     address: "",
     city: "",
     state: "",
@@ -31,14 +32,12 @@ const MembershipStep1 = () => {
 
   const objectives = [
     "Select Objectives",
-    "Personal Growth",
-    "Professional Development",
-    "Spiritual Enlightenment",
-    "Community Service",
-    "Health & Wellness",
-    "Education & Learning",
-    "Business Networking",
-    "Social Impact",
+    "Personal networking",
+    "Business growth",
+    "Learning and development",
+    "Collaboration opportunities",
+    "Investment opportunities",
+    "Mentorship",
     "Other",
   ];
 
@@ -121,6 +120,26 @@ const MembershipStep1 = () => {
                     placeholder="Enter your mobile number"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent transition-all"
                   />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                    placeholder="Enter your password"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent transition-all"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Minimum 6 characters
+                  </p>
                 </div>
               </div>
             </div>
