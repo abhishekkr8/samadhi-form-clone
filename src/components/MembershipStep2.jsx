@@ -1,78 +1,41 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-
-const stakeholders = [
-  {
-    id: "students",
-    title: "Students",
-    description: "Perfect for students looking to enhance their skills and network with industry professionals.",
-    price: 1000,
-    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=200&fit=crop",
-  },
-  {
-    id: "freelancers",
-    title: "Freelancers",
-    description: "Ideal for independent professionals seeking collaboration and growth opportunities.",
-    price: 5000,
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=200&fit=crop",
-  },
-  {
-    id: "educational",
-    title: "Educational Institutions",
-    description: "For schools and colleges looking to connect with industry and enhance student outcomes.",
-    price: 10000,
-    image: "https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=200&fit=crop",
-  },
-  {
-    id: "startups",
-    title: "Startups & MSMEs",
-    description: "For emerging businesses seeking resources, mentorship, and market access.",
-    price: 10000,
-    image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=200&fit=crop",
-  },
-  {
-    id: "incubation",
-    title: "Incubation Centres",
-    description: "For incubators and accelerators looking to expand their network and resources.",
-    price: 10000,
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop",
-  },
-  {
-    id: "service-providers",
-    title: "Service & Product Providers",
-    description: "For businesses offering products and services to the innovation ecosystem.",
-    price: 25000,
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=200&fit=crop",
-  },
-  {
-    id: "industry",
-    title: "Industry",
-    description: "For established companies seeking innovation partnerships and talent access.",
-    price: 25000,
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=200&fit=crop",
-  },
-  {
-    id: "project-partner",
-    title: "Project Partner",
-    description: "For organizations looking to collaborate on specific projects and initiatives.",
-    price: 25000,
-    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=200&fit=crop",
-  },
-];
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { getUserTypes, priceMapping, imageMapping, descriptionMapping } from "../services/api";
 
 const MembershipStep2 = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { personalInfo } = location.state || {};
+  
+  const [userTypes, setUserTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleSelect = (stakeholder) => {
-    console.log("Step 2 Submitted - Selected:", stakeholder.title, "Price:", stakeholder.price);
+  useEffect(() => {
+    const fetchUserTypes = async () => {
+      try {
+        setLoading(true);
+        const data = await getUserTypes();
+        setUserTypes(data.user_types || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserTypes();
+  }, []);
+
+  const handleSelect = (userType) => {
+    const price = priceMapping[userType.value] || 10000;
+    console.log("Step 2 Submitted - Selected:", userType.label, "Price:", price);
     navigate("/step-3", {
       state: {
         personalInfo,
-        stakeholderId: stakeholder.id,
-        stakeholderTitle: stakeholder.title,
-        stakeholderPrice: stakeholder.price,
+        stakeholderId: userType.value,
+        stakeholderTitle: userType.label,
+        stakeholderPrice: price,
       },
     });
   };
@@ -82,6 +45,33 @@ const MembershipStep2 = () => {
       state: { personalInfo }
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-[#4CAF50]" />
+          <span className="text-gray-600">Loading stakeholder types...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <p className="text-red-600 mb-4">Error: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#4CAF50] text-white px-6 py-2 rounded-md hover:bg-[#43A047]"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
@@ -119,16 +109,16 @@ const MembershipStep2 = () => {
 
             {/* Stakeholder Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {stakeholders.map((stakeholder) => (
+              {userTypes.map((userType) => (
                 <div
-                  key={stakeholder.id}
+                  key={userType.value}
                   className="bg-white rounded-lg shadow-md overflow-hidden border-2 border-transparent transition-all hover:shadow-lg hover:border-[#4CAF50]"
                 >
                   {/* Card Image */}
                   <div className="h-40 overflow-hidden">
                     <img
-                      src={stakeholder.image}
-                      alt={stakeholder.title}
+                      src={imageMapping[userType.value] || "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop"}
+                      alt={userType.label}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -136,22 +126,22 @@ const MembershipStep2 = () => {
                   {/* Card Content */}
                   <div className="p-4">
                     <h3 className="font-bold text-gray-800 text-lg mb-2">
-                      {stakeholder.title}
+                      {userType.label}
                     </h3>
                     <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                      {stakeholder.description}
+                      {descriptionMapping[userType.value] || "Join our community and access exclusive benefits."}
                     </p>
 
                     <div className="border-t border-gray-200 pt-4">
                       <p className="text-[#4CAF50] text-2xl font-bold">
-                        ₹{stakeholder.price.toLocaleString("en-IN")}
+                        ₹{(priceMapping[userType.value] || 10000).toLocaleString("en-IN")}
                       </p>
                       <p className="text-gray-400 text-xs mb-4">
                         Annual Membership Fee
                       </p>
 
                       <button
-                        onClick={() => handleSelect(stakeholder)}
+                        onClick={() => handleSelect(userType)}
                         className="w-full py-2 px-4 rounded-md border-2 font-semibold transition-colors bg-white text-[#4CAF50] border-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
                       >
                         Select

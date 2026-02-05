@@ -1,120 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, User, Building, GraduationCap, Briefcase, Users } from "lucide-react";
-
-const preferredModeOptions = ["Online", "Offline", "Hybrid"];
-const freelancerTypeOptions = ["Developer", "Designer", "Writer", "Consultant", "Marketing", "Finance", "Legal", "Other"];
-const experienceLevelOptions = ["Entry Level", "Intermediate", "Experienced", "Expert"];
-const availabilityOptions = ["Full Time", "Part Time", "Freelance", "Contract"];
-const startupTypeOptions = ["Product Based", "Service Based", "Hybrid", "E-Commerce", "SaaS", "Other"];
-const startupStageOptions = ["Idea Stage", "Prototype", "MVP", "Early Revenue", "Growth Stage", "Established"];
-const incubationTypeOptions = ["Government", "Private", "Academic", "Corporate", "Non-Profit", "Other"];
-const providerTypeOptions = ["Product Provider", "Service Provider", "Both", "Consultant", "Agency", "Other"];
-const clientTypeOptions = ["B2B", "B2C", "B2G", "Enterprise", "SME", "Startups", "All"];
-const organizationTypeOptions = ["Private", "Public", "Government", "MNC", "Partnership", "Proprietorship", "Other"];
-const companySizeOptions = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
-const investorTypeOptions = ["Angel Investor", "Venture Capital", "Private Equity", "Corporate Investor", "Government Fund", "Other"];
-const investmentStageOptions = ["Pre-Seed", "Seed", "Series A", "Series B", "Series C+", "Growth Stage"];
-const investmentSizeOptions = ["Under 10 Lakhs", "10-50 Lakhs", "50 Lakhs - 1 Cr", "1-5 Cr", "5-10 Cr", "10+ Cr"];
-
-const stakeholderForms = {
-  students: {
-    title: "Student Details",
-    icon: GraduationCap,
-    fields: [
-      { name: "collegeName", label: "College/University Name", type: "text", required: true, placeholder: "Enter college/university name" },
-      { name: "courseDegree", label: "Course/Degree", type: "text", required: true, placeholder: "Enter course/degree" },
-      { name: "specialization", label: "Specialization/Stream", type: "text", required: true, placeholder: "Enter specialization/stream" },
-      { name: "keySkills", label: "Key Skills", type: "textarea", required: true, placeholder: "Enter key skills" },
-      { name: "preferredMode", label: "Preferred Mode", type: "select", options: preferredModeOptions, required: true },
-      { name: "experience", label: "Experience/Projects (if any)", type: "textarea", required: false, placeholder: "Enter experience/projects (if any)" },
-    ],
-  },
-  freelancers: {
-    title: "Freelancer Details",
-    icon: User,
-    fields: [
-      { name: "freelancerType", label: "Freelancer Type", type: "select", options: freelancerTypeOptions, required: true },
-      { name: "primarySkills", label: "Primary Skills", type: "textarea", required: true, placeholder: "Enter primary skills" },
-      { name: "experienceLevel", label: "Experience Level", type: "select", options: experienceLevelOptions, required: true },
-      { name: "availability", label: "Availability", type: "select", options: availabilityOptions, required: true },
-      { name: "preferredWorkMode", label: "Preferred Work Mode", type: "select", options: preferredModeOptions, required: true },
-    ],
-  },
-  educational: {
-    title: "Educational Institution Details",
-    icon: Building,
-    fields: [
-      { name: "institutionName", label: "Institution Name", type: "text", required: true, placeholder: "Enter institution name" },
-      { name: "institutionType", label: "Institution Type", type: "select", options: ["School", "College", "University", "Training Institute", "Other"], required: true },
-      { name: "affiliatedUniversity", label: "Affiliated University/Board", type: "text", required: true, placeholder: "Enter affiliated university/board" },
-      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
-      { name: "coursesOffered", label: "Courses Offered", type: "textarea", required: true, placeholder: "Enter courses offered" },
-      { name: "departments", label: "Departments/Streams", type: "text", required: true, placeholder: "Enter departments/streams" },
-      { name: "totalStudents", label: "Total Students (Approx)", type: "text", required: true, placeholder: "Enter total students (approx)" },
-      { name: "institutionLocation", label: "Institution Location", type: "text", required: true, placeholder: "Enter institution location" },
-    ],
-  },
-  startups: {
-    title: "Startup / MSME Details",
-    icon: Briefcase,
-    fields: [
-      { name: "startupType", label: "Startup Type", type: "select", options: startupTypeOptions, required: true },
-      { name: "startupStage", label: "Startup Stage", type: "select", options: startupStageOptions, required: true },
-      { name: "businessLocation", label: "Business Location", type: "text", required: true, placeholder: "Enter business location" },
-      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
-      { name: "industryDomain", label: "Industry/Domain", type: "text", required: true, placeholder: "Enter industry/domain" },
-    ],
-  },
-  incubation: {
-    title: "Incubation Centre Details",
-    icon: Building,
-    fields: [
-      { name: "incubationCentreName", label: "Incubation Centre Name", type: "text", required: true, placeholder: "Enter incubation centre name" },
-      { name: "incubationType", label: "Incubation Type", type: "select", options: incubationTypeOptions, required: true },
-      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
-      { name: "focusAreas", label: "Focus Areas", type: "text", required: true, placeholder: "Enter focus areas" },
-      { name: "startupStagesSupported", label: "Startup Stages Supported", type: "text", required: true, placeholder: "Enter startup stages supported" },
-      { name: "facilitiesProvided", label: "Facilities Provided", type: "text", required: true, placeholder: "Enter facilities provided" },
-      { name: "centreLocation", label: "Centre Location", type: "text", required: true, placeholder: "Enter centre location" },
-    ],
-  },
-  "service-providers": {
-    title: "Service / Product Provider Details",
-    icon: Briefcase,
-    fields: [
-      { name: "companyBrandName", label: "Company/Brand Name", type: "text", required: true, placeholder: "Enter company/brand name" },
-      { name: "providerType", label: "Provider Type", type: "select", options: providerTypeOptions, required: true },
-      { name: "servicesProductsOffered", label: "Services/Products Offered", type: "textarea", required: true, placeholder: "Enter services/products offered" },
-      { name: "yearsExperience", label: "Years of Experience", type: "text", required: true, placeholder: "Enter years of experience" },
-      { name: "clientType", label: "Client Type", type: "select", options: clientTypeOptions, required: true },
-      { name: "operatingLocation", label: "Operating Location", type: "text", required: true, placeholder: "Enter operating location" },
-    ],
-  },
-  industry: {
-    title: "Industry Details",
-    icon: Building,
-    fields: [
-      { name: "organizationCompanyName", label: "Organization/Company Name", type: "text", required: true, placeholder: "Enter organization/company name" },
-      { name: "organizationType", label: "Organization Type", type: "select", options: organizationTypeOptions, required: true },
-      { name: "industrySectorDomain", label: "Industry Sector/Domain", type: "text", required: true, placeholder: "Enter industry sector/domain" },
-      { name: "yearEstablishment", label: "Year of Establishment", type: "text", required: true, placeholder: "Enter year of establishment" },
-      { name: "companySize", label: "Company Size", type: "select", options: companySizeOptions, required: true },
-      { name: "operationalLocation", label: "Operational Location", type: "text", required: true, placeholder: "Enter operational location" },
-    ],
-  },
-  "project-partner": {
-    title: "Project Partner Details",
-    icon: Users,
-    fields: [
-      { name: "investorType", label: "Investor Type", type: "select", options: investorTypeOptions, required: true },
-      { name: "preferredInvestmentStage", label: "Preferred Investment Stage", type: "select", options: investmentStageOptions, required: true },
-      { name: "typicalInvestmentSize", label: "Typical Investment Size", type: "select", options: investmentSizeOptions, required: true },
-      { name: "preferredSectors", label: "Preferred Sectors", type: "text", required: true, placeholder: "Enter preferred sectors" },
-      { name: "preferredGeography", label: "Preferred Geography", type: "text", required: true, placeholder: "Enter preferred geography" },
-    ],
-  },
-};
+import { ArrowLeft, Loader2, FileText } from "lucide-react";
+import { getUserTypeSchema } from "../services/api";
 
 const MembershipStep3 = () => {
   const navigate = useNavigate();
@@ -122,9 +9,25 @@ const MembershipStep3 = () => {
   const { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice } = location.state || {};
 
   const [formData, setFormData] = useState({});
+  const [schema, setSchema] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const stakeholderForm = stakeholderForms[stakeholderId] || stakeholderForms.students;
-  const IconComponent = stakeholderForm.icon;
+  useEffect(() => {
+    const fetchSchema = async () => {
+      if (!stakeholderId) return;
+      try {
+        setLoading(true);
+        const data = await getUserTypeSchema(stakeholderId);
+        setSchema(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSchema();
+  }, [stakeholderId]);
 
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -171,6 +74,40 @@ const MembershipStep3 = () => {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-[#4CAF50]" />
+          <span className="text-gray-600">Loading form fields...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <p className="text-red-600 mb-4">Error: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#4CAF50] text-white px-6 py-2 rounded-md hover:bg-[#43A047]"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Convert schema fields to sorted array
+  const fields = schema?.fields
+    ? Object.entries(schema.fields)
+        .map(([key, value]) => ({ name: key, ...value }))
+        .sort((a, b) => (a.order || 0) - (b.order || 0))
+    : [];
+
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -200,7 +137,7 @@ const MembershipStep3 = () => {
             {/* Selected Stakeholder Info */}
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 flex items-center gap-4">
               <div className="bg-[#4CAF50] p-3 rounded-full">
-                <IconComponent className="w-6 h-6 text-white" />
+                <FileText className="w-6 h-6 text-white" />
               </div>
               <div>
                 <p className="font-semibold text-gray-800">{stakeholderTitle}</p>
@@ -212,32 +149,34 @@ const MembershipStep3 = () => {
               {/* Stakeholder Specific Form */}
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <IconComponent className="w-5 h-5 text-[#4CAF50]" />
-                  {stakeholderForm.title}
+                  <FileText className="w-5 h-5 text-[#4CAF50]" />
+                  {stakeholderTitle} Details
                 </h2>
                 <p className="text-gray-500 text-sm mb-6">
                   Please provide the following details
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {stakeholderForm.fields.map((field) => (
+                  {fields.map((field) => (
                     <div
                       key={field.name}
                       className={field.type === "textarea" ? "md:col-span-2" : ""}
                     >
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {field.label}
-                        {field.required && <span className="text-red-500 ml-1">*</span>}
+                        {field.required !== false && <span className="text-red-500 ml-1">*</span>}
                       </label>
 
-                      {field.type === "text" && (
+                      {(field.type === "string" || field.type === "text") && (
                         <input
                           type="text"
                           value={formData[field.name] || ""}
                           onChange={(e) => handleInputChange(field.name, e.target.value)}
-                          required={field.required}
+                          required={field.required !== false}
+                          minLength={field.min_length}
+                          maxLength={field.max_length}
                           className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
-                          placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+                          placeholder={`Enter ${field.label.toLowerCase()}`}
                         />
                       )}
 
@@ -245,7 +184,7 @@ const MembershipStep3 = () => {
                         <select
                           value={formData[field.name] || ""}
                           onChange={(e) => handleInputChange(field.name, e.target.value)}
-                          required={field.required}
+                          required={field.required !== false}
                           className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent bg-white"
                         >
                           <option value="">Select {field.label}</option>
@@ -261,10 +200,25 @@ const MembershipStep3 = () => {
                         <textarea
                           value={formData[field.name] || ""}
                           onChange={(e) => handleInputChange(field.name, e.target.value)}
-                          required={field.required}
+                          required={field.required !== false}
                           rows={4}
+                          minLength={field.min_length}
+                          maxLength={field.max_length}
                           className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent resize-y"
-                          placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+                          placeholder={`Enter ${field.label.toLowerCase()}`}
+                        />
+                      )}
+
+                      {field.type === "number" && (
+                        <input
+                          type="number"
+                          value={formData[field.name] || ""}
+                          onChange={(e) => handleInputChange(field.name, e.target.value)}
+                          required={field.required !== false}
+                          min={field.min}
+                          max={field.max}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
+                          placeholder={`Enter ${field.label.toLowerCase()}`}
                         />
                       )}
                     </div>
