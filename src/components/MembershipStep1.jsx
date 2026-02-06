@@ -37,12 +37,15 @@ const MembershipStep1 = () => {
       }
     };
     fetchSchema();
+<<<<<<< HEAD
 
     // Load saved data from sessionStorage
     const savedData = sessionStorage.getItem('step1Data');
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
+=======
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
   }, []);
 
   // Get current location
