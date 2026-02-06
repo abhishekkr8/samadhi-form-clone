@@ -1,4 +1,8 @@
 const BASE_URL = "http://46.202.166.179:8000";
+<<<<<<< HEAD
+const API_BASE_URL = `${BASE_URL}/api`; // Add this line
+=======
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 
 // Price mapping for user types (not provided by API)
 export const priceMapping = {
@@ -83,6 +87,78 @@ export const registerUser = async (data) => {
   return response.json();
 };
 
+<<<<<<< HEAD
+// Payment APIs
+export const createPaymentOrder = async (paymentData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/payment/order`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(paymentData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Payment Order Error Response:", errorData);
+      
+      // Extract proper error message
+      const errorMsg = errorData.detail?.[0]?.msg 
+        || errorData.detail 
+        || errorData.message 
+        || "Failed to create payment order";
+      
+      throw new Error(errorMsg);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Create Payment Order Error:", error);
+    throw error;
+  }
+};
+
+let verificationTimeout;
+
+export const verifyPayment = async (verificationData) => {
+  // Clear any pending verification
+  if (verificationTimeout) {
+    clearTimeout(verificationTimeout);
+  }
+  
+  // Debounce verification calls
+  return new Promise((resolve, reject) => {
+    verificationTimeout = setTimeout(async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/payment/verify`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(verificationData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Payment Verify Error Response:", errorData);
+          
+          const errorMsg = errorData.detail?.[0]?.msg 
+            || errorData.detail 
+            || errorData.message 
+            || "Payment verification failed";
+          
+          reject(new Error(errorMsg));
+        } else {
+          resolve(await response.json());
+        }
+      } catch (error) {
+        console.error("Verify Payment Error:", error);
+        reject(error);
+      }
+    }, 500); // 500ms debounce
+  });
+=======
 // Create payment order
 export const createPaymentOrder = async (data) => {
   const response = await fetch(`${BASE_URL}/api/payment/order`, {
@@ -97,4 +173,5 @@ export const createPaymentOrder = async (data) => {
     throw new Error(error.detail?.[0]?.msg || "Payment order creation failed");
   }
   return response.json();
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 };

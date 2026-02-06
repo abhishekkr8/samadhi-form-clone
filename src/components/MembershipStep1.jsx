@@ -37,6 +37,15 @@ const MembershipStep1 = () => {
       }
     };
     fetchSchema();
+<<<<<<< HEAD
+
+    // Load saved data from sessionStorage
+    const savedData = sessionStorage.getItem('step1Data');
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+=======
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
   }, []);
 
   // Get current location
@@ -62,12 +71,19 @@ const MembershipStep1 = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+      // Auto-save to sessionStorage on every change
+      sessionStorage.setItem('step1Data', JSON.stringify(updatedData));
+      return updatedData;
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Step 1 Submitted:", formData);
+    // Save before navigation
+    sessionStorage.setItem('step1Data', JSON.stringify(formData));
     navigate("/step-2", {
       state: { personalInfo: formData }
     });

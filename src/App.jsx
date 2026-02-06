@@ -8,6 +8,10 @@ import MembershipStep2 from "./components/MembershipStep2";
 import MembershipStep3 from "./components/MembershipStep3";
 import MembershipStep4 from "./components/MembershipStep4";
 import MembershipStep5 from "./components/MembershipStep5";
+<<<<<<< HEAD
+import SuccessPage from "./components/SuccessPage";
+=======
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 
 const queryClient = new QueryClient();
 
@@ -31,7 +35,14 @@ const router = createBrowserRouter([
   {
     path: "/step-5",
     element: <MembershipStep5 />,
+<<<<<<< HEAD
+  },{
+    path: "/success",
+    element: <SuccessPage/>
+  }
+=======
   },
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 ]);
 
 const App = () => (

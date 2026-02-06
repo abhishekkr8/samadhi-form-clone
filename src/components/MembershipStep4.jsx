@@ -30,9 +30,43 @@ const MembershipStep4 = () => {
       }
     };
     fetchSchema();
+<<<<<<< HEAD
+
+    // Load saved data from sessionStorage
+    const savedData = sessionStorage.getItem('step4Data');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      setSelectedCategories(parsed.selectedCategories || []);
+      setSelectedSubCategories(parsed.selectedSubCategories || []);
+      setCustomCategory(parsed.customCategory || "");
+      setCustomSubCategory(parsed.customSubCategory || "");
+      setDescribeNeed(parsed.describeNeed || "");
+    }
   }, []);
 
+  // Auto-save function
+  const saveToSessionStorage = () => {
+    const dataToSave = {
+      selectedCategories,
+      selectedSubCategories,
+      customCategory,
+      customSubCategory,
+      describeNeed
+    };
+    sessionStorage.setItem('step4Data', JSON.stringify(dataToSave));
+  };
+
+  // Auto-save whenever data changes
+  useEffect(() => {
+    saveToSessionStorage();
+  }, [selectedCategories, selectedSubCategories, customCategory, customSubCategory, describeNeed]);
+=======
+  }, []);
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
+
   const handleBack = () => {
+    // Save before going back
+    saveToSessionStorage();
     navigate("/step-3", {
       state: { personalInfo, stakeholderId, stakeholderTitle, stakeholderPrice }
     });
@@ -69,6 +103,11 @@ const MembershipStep4 = () => {
       customSubCategory,
       describeNeed,
     });
+<<<<<<< HEAD
+    // Save before navigation
+    saveToSessionStorage();
+=======
+>>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
     // Navigate to Step 5 payment page
     navigate("/step-5", {
       state: {
