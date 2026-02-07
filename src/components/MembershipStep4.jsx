@@ -30,7 +30,6 @@ const MembershipStep4 = () => {
       }
     };
     fetchSchema();
-<<<<<<< HEAD
 
     // Load saved data from sessionStorage
     const savedData = sessionStorage.getItem('step4Data');
@@ -60,9 +59,6 @@ const MembershipStep4 = () => {
   useEffect(() => {
     saveToSessionStorage();
   }, [selectedCategories, selectedSubCategories, customCategory, customSubCategory, describeNeed]);
-=======
-  }, []);
->>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 
   const handleBack = () => {
     // Save before going back
@@ -103,11 +99,8 @@ const MembershipStep4 = () => {
       customSubCategory,
       describeNeed,
     });
-<<<<<<< HEAD
     // Save before navigation
     saveToSessionStorage();
-=======
->>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
     // Navigate to Step 5 payment page
     navigate("/step-5", {
       state: {

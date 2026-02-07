@@ -27,7 +27,6 @@ const MembershipStep3 = () => {
       }
     };
     fetchSchema();
-<<<<<<< HEAD
 
     // Load saved data from sessionStorage
     const savedData = sessionStorage.getItem('step3Data');
@@ -43,12 +42,6 @@ const MembershipStep3 = () => {
       sessionStorage.setItem('step3Data', JSON.stringify(updatedData));
       return updatedData;
     });
-=======
-  }, [stakeholderId]);
-
-  const handleInputChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
->>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
   };
 
   const handleBack = () => {
@@ -64,11 +57,8 @@ const MembershipStep3 = () => {
       price: stakeholderPrice,
       formData,
     });
-<<<<<<< HEAD
     // Save before navigation
     sessionStorage.setItem('step3Data', JSON.stringify(formData));
-=======
->>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
     // Navigate to Step 4 (Category, Sub Category, Describe Your Need, Subscriptions)
     navigate("/step-4", {
       state: {

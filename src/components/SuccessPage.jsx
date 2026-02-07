@@ -1,21 +1,25 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
 
 const SuccessPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get user data from navigation state
+  const { userName = "User", userEmail, membershipType } = location.state || {};
 
-//   useEffect(() => {
-//     // Clear all sessionStorage data
-//     sessionStorage.clear();
+  useEffect(() => {
+    // Clear all sessionStorage data
+    sessionStorage.clear();
     
-//     // Redirect to home after 5 seconds
-//     const timer = setTimeout(() => {
-//       navigate("/");
-//     }, 5000);
+    // Redirect to home after 5 seconds
+    const timer = setTimeout(() => {
+      navigate("/");
+    }, 5000);
 
-//     return () => clearTimeout(timer);
-//   }, [navigate]);
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center px-4">
@@ -31,14 +35,27 @@ const SuccessPage = () => {
             Welcome to Samadhi!
           </h1>
           
+          {/* User Name */}
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">
+            {userName}
+          </h3>
+          
           <p className="text-lg text-green-600 font-semibold mb-4">
             Payment Successful! 🎉
           </p>
 
-          <p className="text-gray-600 mb-6">
-            Your membership has been activated successfully. 
-            You will be redirected to the homepage shortly.
+          <p className="text-gray-600 mb-4">
+            Your membership has been activated successfully.
           </p>
+
+          {/* Membership Details */}
+          {membershipType && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-700">
+                <span className="font-semibold">Membership Type:</span> {membershipType}
+              </p>
+            </div>
+          )}
 
           {/* Redirect Info */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">

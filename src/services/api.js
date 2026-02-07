@@ -1,8 +1,5 @@
 const BASE_URL = "http://46.202.166.179:8000";
-<<<<<<< HEAD
 const API_BASE_URL = `${BASE_URL}/api`; // Add this line
-=======
->>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 
 // Price mapping for user types (not provided by API)
 export const priceMapping = {
@@ -87,7 +84,6 @@ export const registerUser = async (data) => {
   return response.json();
 };
 
-<<<<<<< HEAD
 // Payment APIs
 export const createPaymentOrder = async (paymentData) => {
   try {
@@ -158,20 +154,4 @@ export const verifyPayment = async (verificationData) => {
       }
     }, 500); // 500ms debounce
   });
-=======
-// Create payment order
-export const createPaymentOrder = async (data) => {
-  const response = await fetch(`${BASE_URL}/api/payment/order`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail?.[0]?.msg || "Payment order creation failed");
-  }
-  return response.json();
->>>>>>> 8a8967f06bd4ac354e79b6c1321814cedf17b4f4
 };
